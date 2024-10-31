@@ -20,13 +20,13 @@ pub struct BatteryStatus {
     pub energy_level: f32,
 }
 
-#[pyclass(module = "lidar_publisher")]
-struct LidarPublisher {
+#[pyclass(module = "beamng_publisher")]
+struct BeamngPublisher {
     session: Session
 }
 
 #[pymethods]
-impl LidarPublisher {
+impl BeamngPublisher {
     #[new]
     fn new() -> PyResult<Self> {
         let config = Config::from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
@@ -34,7 +34,7 @@ impl LidarPublisher {
         
         let session = zenoh::open(config).wait().expect("Unable to open session");
         
-        Ok(LidarPublisher {
+        Ok(BeamngPublisher {
             session
         })
     }
@@ -469,7 +469,7 @@ impl LidarPublisher {
 }
 
 #[pymodule]
-fn lidar_serializer(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<LidarPublisher>()?;
+fn beamng_publisher(_py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_class::<BeamngPublisher>()?;
     Ok(())
 }
