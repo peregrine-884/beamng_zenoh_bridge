@@ -8,7 +8,7 @@ from beamngpy.sensors import Lidar, Electrics, Camera, AdvancedIMU
 import keyboard
 import threading
 import random
-import lidar_serializer
+import beamng_publisher
 from scipy.spatial.transform import Rotation as R
 
 import zenoh
@@ -56,7 +56,7 @@ class HazardLightsCommand(IdlStruct, typename="HazardLightsCommand"):
     stamp: Time
     command: uint8
 
-lidar_publisher = lidar_serializer.LidarPublisher()
+lidar_publisher = beamng_publisher.BeamngPublisher()
 stop_event = threading.Event()
 manual_mode = False
 heading_rate = 0.0
@@ -387,18 +387,6 @@ def hazard_lights_callback(sample: zenoh.Sample):
 
 def main():
     global vehicle
-    # zenohの設定
-    config = zenoh.Config.from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
-    session = zenoh.open(config)
-    key = 'control/command/control_cmd'
-    control_sub = session.declare_subscriber(key, control_callback)
-    
-    key = 'control/command/turn_indicators_cmd'
-    turn_indicators_sub = session.declare_subscriber(key, turn_indicators_callback)
-    
-    key = 'control/command/hazard_lights_cmd'
-    hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
-    
     # beamNGの設定
     random.seed(1703)
     set_up_simple_logging()
@@ -420,6 +408,18 @@ def main():
     bng.scenario.load(scenario)
     bng.ui.hide_hud()
     bng.scenario.start()
+    
+    # zenohの設定
+    config = zenoh.Config.from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
+    session = zenoh.open(config)
+    key = 'control/command/control_cmd'
+    control_sub = session.declare_subscriber(key, control_callback)
+    
+    key = 'control/command/turn_indicators_cmd'
+    turn_indicators_sub = session.declare_subscriber(key, turn_indicators_callback)
+    
+    key = 'control/command/hazard_lights_cmd'
+    hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
     
     # Lidar
     lidar = Lidar(
