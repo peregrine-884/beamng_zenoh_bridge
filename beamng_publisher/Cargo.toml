@@ -3,4 +3,38 @@ name = "beamng_publisher"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "beamng_publisher"
+crate-type = ["cdylib"]
+
 [dependencies]
+pyo3 = { version = "0.21.2", features = ["extension-module"] }
+serde = { version = "1.0.210", features = ["derive"] }
+numpy = "=0.21.0"
+cdr = "0.2.4"
+zenoh = "=1.0.0-alpha.6"
+zenoh-buffers = "=1.0.0-alpha.6"
+zenoh-codec = "=1.0.0-alpha.6"
+zenoh-collections = "=1.0.0-alpha.6"
+zenoh-config = "=1.0.0-alpha.6"
+zenoh-core = "=1.0.0-alpha.6"
+zenoh-crypto = "=1.0.0-alpha.6"
+zenoh-keyexpr = "=1.0.0-alpha.6"
+zenoh-link = "=1.0.0-alpha.6"
+zenoh-link-commons = "=1.0.0-alpha.6"
+zenoh-link-quic = "=1.0.0-alpha.6"
+zenoh-link-tcp = "=1.0.0-alpha.6"
+zenoh-link-tls = "=1.0.0-alpha.6"
+zenoh-link-udp = "=1.0.0-alpha.6"
+zenoh-link-unixsock_stream = "=1.0.0-alpha.6"
+zenoh-link-ws = "=1.0.0-alpha.6"
+zenoh-macros = "=1.0.0-alpha.6"
+zenoh-plugin-trait = "=1.0.0-alpha.6"
+zenoh-protocol = "=1.0.0-alpha.6"
+zenoh-result = "=1.0.0-alpha.6"
+zenoh-runtime = "=1.0.0-alpha.6"
+zenoh-sync = "=1.0.0-alpha.6"
+zenoh-task = "=1.0.0-alpha.6"
+zenoh-transport = "=1.0.0-alpha.6"
+zenoh-util = "=1.0.0-alpha.6"
+zenoh-ros-type = "=0.3.4"
