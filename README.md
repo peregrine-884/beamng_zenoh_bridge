@@ -29,6 +29,13 @@ rustup install nightly
 rustup default nightly
 ```
 
+**2. Install Python Packages**  
+Next, install setuptools and setuptools-rust using pip:
+```bash
+pip install setuptools
+pip install setuptools-rust
+```
+
 ## 2. Install beamngpy
 To utilize the BeamNG API, run the following command:
 ```bash
@@ -44,8 +51,6 @@ pip install eclipse-zenoh==1.0.0a6
 ## 4. Install Python Packages
 Next, install the required Python packages
 ```bash
-pip install setuptools
-pip install setuptools-rust
 pip install pycdr2
 pip install keyboard
 ```
