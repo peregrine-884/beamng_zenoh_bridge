@@ -62,20 +62,18 @@ python setup.py install
 To run the application, you will need to use two terminal windows
 
 ### Terminal 1
-**1. Move to the directory where BeamNG.tech is located:**
 ```bash
+# Move to the directory where BeamNG.tech is located
 cd <path-to-beamng.tech-directory>
-```
 
-**2. Run the BeamNG.tech application**
-```bash
+# Run the BeamNG.tech application
 Bin64\BeamNG.tech.x64.exe -console -nosteam -tcom-listen-ip "127.0.0.1" -lua "extensions.load('tech/techCore');tech_techCore.openServer(64256)"
 ```
 
 ### Terminal 2
-**1. Execute the Python script:**
 ```bash
-python beamng.py
+cd ~/zenoh_beamng_bridge/beamng
+python main.py
 ```
 
 
