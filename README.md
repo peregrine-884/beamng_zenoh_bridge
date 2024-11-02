@@ -30,8 +30,7 @@ rustup default nightly
 ```
 
 **2. Install Python Packages**  
-
-Next, install `setuptools` and `setuptools-rust` using pip:
+Next, install setuptools and setuptools-rust using pip:
 ```bash
 pip install setuptools
 pip install setuptools-rust
@@ -40,10 +39,23 @@ pip install setuptools-rust
 ## 2. Install beamngpy
 To utilize the BeamNG API, run the following command:
 ```bash
-pip install beamngpy
+pip install beamngpy==1.30
 ```
 
-## 3. Clone and build the project
+## 3. Install eclipse-zenoh
+To enable data communication with Zenoh, install the `eclipse-zenoh` library
+```bash
+pip install eclipse-zenoh==1.0.0a6
+```
+
+## 4. Install Python Packages
+Next, install the required Python packages
+```bash
+pip install pycdr2
+pip install keyboard
+```
+
+## 5. Clone and build the project
 To use this project, first clone the repository and build it. This will prepare the Rust functions for use in Python. Follow these steps:
 
 ```
@@ -62,20 +74,18 @@ python setup.py install
 To run the application, you will need to use two terminal windows
 
 ### Terminal 1
-**1. Move to the directory where BeamNG.tech is located:**
 ```bash
+# Move to the directory where BeamNG.tech is located
 cd <path-to-beamng.tech-directory>
-```
 
-**2. Run the BeamNG.tech application**
-```bash
+# Run the BeamNG.tech application
 Bin64\BeamNG.tech.x64.exe -console -nosteam -tcom-listen-ip "127.0.0.1" -lua "extensions.load('tech/techCore');tech_techCore.openServer(64256)"
 ```
 
 ### Terminal 2
-**1. Execute the Python script:**
 ```bash
-python beamng.py
+cd ~/zenoh_beamng_bridge/beamng
+python main.py
 ```
 
 
