@@ -33,10 +33,12 @@ def send_vehicle_info_data():
 		lateral_vel = np.dot(vel, lateral_dir)
 		
 		# steering 
-		# left(positive) right(negative) center(0.0)
-		# 車両の最大操舵角を0.7[rad]に設定する
+		# Set the vehicle's maximum steering angle to 0.7 [rad]
+		# The value obtained from BeamNG is left (negative) and right (positive),
+		# while Autoware requires left (positive) and right (negative).
+		# Therefore, the value is converted accordingly.
 		steering_input = electrics['steering_input']
-		steering_tire_angle = steering_input * 0.7
+		steering_tire_angle = steering_input * 0.7 * -1
 		vehicle_state_instance.set_steering_tire_angle(steering_tire_angle)
 		
 		# gear
