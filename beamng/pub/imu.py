@@ -20,7 +20,10 @@ def send_imu_data(imu):
     data = imu.poll()
     
     accRaw = np.array(data['accRaw'])
-    accVel = np.array(data['angVel'])
+    angVel = np.array(data['angVel'])
+    
+    heading_rate = angVel[2]
+    vehicle_state_instance.set_heading_rate(heading_rate)
     
     dirX = data['dirX']
     dirY = data['dirY']
@@ -30,23 +33,47 @@ def send_imu_data(imu):
     
     rotation = R.from_matrix(rotation_matrix)
     euler_angles = rotation.as_euler('xyz', degrees=True)
-    euler_angles[2] += 90
-    adjusted_rotation = R.from_euler('xyz', euler_angles, degrees=True)
+    # euler_angles[0] += 45
+    # euler_angles[1] += 0
+    euler_angles[2] += 135
+    adjusted_rotation = R.from_euler('xyz', [euler_angles[0], euler_angles[1], euler_angles[2]], degrees=True)
     adjusted_rotation_matrix = adjusted_rotation.as_matrix()
     
-    accLocal = adjusted_rotation_matrix @ accRaw
-    angVelLocal = adjusted_rotation_matrix @ accVel
-    heading_rate = angVelLocal[2]
-    vehicle_state_instance.set_heading_rate(heading_rate)
+    # accLocal = adjusted_rotation_matrix @ accRaw
+    # angVelLocal = adjusted_rotation_matrix @ angVel
+    
+    yaw_angle = np.radians(0)
+    pitch_angle = np.radians(0)
+    roll_angle = np.radians(-90)
+
+    R_z = np.array([
+        [np.cos(yaw_angle), -np.sin(yaw_angle), 0],
+        [np.sin(yaw_angle), np.cos(yaw_angle), 0],
+        [0, 0, 1]
+    ])
+
+    R_y = np.array([
+        [np.cos(pitch_angle), 0, np.sin(pitch_angle)],
+        [0, 1, 0],
+        [-np.sin(pitch_angle), 0, np.cos(pitch_angle)]
+    ])
+
+    R_x = np.array([
+        [1, 0, 0],
+        [0, np.cos(roll_angle), -np.sin(roll_angle)],
+        [0, np.sin(roll_angle), np.cos(roll_angle)]
+    ])
+
+    R_combined = R_x @ R_y @ R_z
+    accLocal = R_combined @ accRaw
+
 
     quaternion = adjusted_rotation.as_quat()
     
-    imu_data = quaternion.tolist() + angVelLocal.tolist() + accLocal.tolist()
+    imu_data = quaternion.tolist() + angVel.tolist() + accLocal.tolist()
     
     data_publisher_instance.imu(imu_data)
     
     next_time = max(0, imu_interval - (time.time() - base_time))
     time.sleep(next_time)
     base_time = time.time()
-    
-    
