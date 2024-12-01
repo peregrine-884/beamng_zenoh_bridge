@@ -23,6 +23,9 @@ class DataPublisherSingleton:
   def clock(self):
     self.data_publisher.publish_clock()
     
+  def camera(self, image):
+    self.data_publisher.process_camera(image)
+    
     
 class VehicleSingleton:
   _instance = None
