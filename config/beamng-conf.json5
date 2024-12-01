@@ -2,7 +2,7 @@
   mode: "peer",
   connect: {
     endpoints: [
-      "tcp/YOUR_IP_ADDRESS:7447"
+      "tcp/192.168.20.222:7447"
     ]
   },
   transport: {

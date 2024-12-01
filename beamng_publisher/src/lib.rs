@@ -22,8 +22,16 @@ pub struct BatteryStatus {
     pub energy_level: f32,
 }
 
+#[derive(Serialize, Deserialize, PartialEq, Clone)]
+pub struct VehicleControl {
+    pub stamp: builtin_interfaces::Time,
+    pub throttle: f32,
+    pub brake: f32,
+    pub steering: f32,
+}
+
 #[pyclass(module = "beamng_publisher")]
-struct BeamngPublisher {
+pub struct BeamngPublisher {
     session: Arc<Session>,
     clock_publisher: Arc<Mutex<Publisher<'static>>>,
     pointcloud_publisher: Arc<Mutex<Publisher<'static>>>,
@@ -35,7 +43,8 @@ struct BeamngPublisher {
     control_mode_publisher: Arc<Mutex<Publisher<'static>>>,
     battery_publisher: Arc<Mutex<Publisher<'static>>>,
     hazard_publisher: Arc<Mutex<Publisher<'static>>>,
-    turn_signal_publisher: Arc<Mutex<Publisher<'static>>>
+    turn_signal_publisher: Arc<Mutex<Publisher<'static>>>,
+    vehicle_control_publisher: Arc<Mutex<Publisher<'static>>>,
 }
 
 #[pymethods]
@@ -113,6 +122,12 @@ impl BeamngPublisher {
             .wait()
             .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
         let turn_signal_publisher = Arc::new(Mutex::new(turn_signal_publisher));
+
+        let vehicle_control_publisher = session
+            .declare_publisher("vehicle_control")
+            .wait()
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+        let vehicle_control_publisher = Arc::new(Mutex::new(vehicle_control_publisher));
         
         Ok(BeamngPublisher {
             session,
@@ -127,6 +142,7 @@ impl BeamngPublisher {
             battery_publisher,
             hazard_publisher,
             turn_signal_publisher,
+            vehicle_control_publisher
         })
     }
 
@@ -358,6 +374,43 @@ impl BeamngPublisher {
         };
 
         let encoded = cdr::serialize::<_, _, CdrLe>(&image, Infinite)
+            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+
+        publisher
+            .put(encoded)
+            .wait()
+            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+
+        Ok(())
+    }
+
+    fn process_vehicle_control(
+        &self,
+        throttle: f32,
+        brake: f32,
+        steering: f32,
+    ) -> PyResult<()> {
+        println!("Throttle: {}, Brake: {}, Steering: {}", throttle, brake, steering);
+        
+        let mut publisher = self.vehicle_control_publisher.lock().unwrap();
+
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Unable to get current time");
+
+        let time = builtin_interfaces::Time {
+            sec: now.as_secs() as i32,
+            nanosec: now.subsec_nanos(),
+        };
+
+        let vehicle_control = VehicleControl {
+            stamp: time,
+            throttle: throttle,
+            brake: brake,
+            steering: steering,
+        };
+
+        let encoded = cdr::serialize::<_, _, CdrLe>(&vehicle_control, Infinite)
             .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
 
         publisher

@@ -20,6 +20,9 @@ class DataPublisherSingleton:
   def vehicle_info(self, vehicle_info):
     self.data_publisher.process_vehicle_status(*vehicle_info)
     
+  def vehicle_control(self, vehicle_control):
+    self.data_publisher.process_vehicle_control(*vehicle_control)
+    
   def clock(self):
     self.data_publisher.publish_clock()
     

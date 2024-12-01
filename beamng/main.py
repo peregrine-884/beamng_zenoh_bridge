@@ -6,6 +6,7 @@ import threading
 import random
 import beamng_publisher
 import zenoh
+import time
 
 from shared import *
 
@@ -33,6 +34,12 @@ def main():
     scenario.add_vehicle(vehicle,
         pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
     )
+    
+    # scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
+    # scenario.add_vehicle(vehicle,
+    #         pos=(-97.2, -304.2, 74.0), rot_quat=(0,0,0.3826834,0.9238795)
+    # )
     
     scenario.make(bng)
     
@@ -73,6 +80,25 @@ def main():
         is_dir_world_space=False,
     )
     
+    camera = Camera(
+        'camera1',
+        bng,
+        vehicle,
+        requested_update_time=0.01,
+        pos=(0, 0, 3),
+        dir=(0, -1, 0),
+        up=(0, 0, 1),
+        resolution=(640, 480),
+        near_far_planes=(0.05, 300),
+        is_using_shared_memory=True,
+        is_render_annotations=False,
+        is_render_instance=False,
+        is_render_depth=False,
+        is_visualised=False,
+        is_streaming=True,
+        is_dir_world_space=False
+    )
+    
     vehicle.sensors.attach('electrics', Electrics())
     
     # zenoh
@@ -108,12 +134,24 @@ def main():
     imu_thread = threading.Thread(target=send_imu_data, args=(imu,))
     vehicle_info_thread = threading.Thread(target=send_vehicle_info_data)
     clock_thread = threading.Thread(target=send_clock_data)
+    # camera_thread = threading.Thread(target=send_camera_data, args=(camera,))
 
     stop_thread.start()
     lidar_thread.start()
     imu_thread.start()
     vehicle_info_thread.start()
     clock_thread.start()
+    # camera_thread.start()
+    
+    # threads = [stop_thread, lidar_thread, imu_thread, vehicle_info_thread, clock_thread]
+    # threads = [clock_thread, lidar_thread]
+    # while any(thread.is_alive() for thread in threads):
+    #     for thread in threads:
+    #         if thread.is_alive():
+    #             print(f"{thread.name} is running.")
+    #         else:
+    #             print(f"{thread.name} has finished.")
+    #     time.sleep(1)
     
     stop_thread.join()
     lidar_thread.join()
@@ -123,7 +161,8 @@ def main():
     
     lidar.remove()
     imu.remove()
-    bng.close()
+    camera.remove()
+    # bng.close()
     
     control_sub.undeclare()
     turn_indicators_sub.undeclare()

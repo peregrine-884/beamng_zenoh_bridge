@@ -84,6 +84,21 @@ def send_vehicle_info_data():
 		]
 	
 		data_publisher_instance.vehicle_info(vehicle_status)
+  
+		# vehicle control
+		throttle = electrics['throttle_input']
+		brake = electrics['brake_input']
+		steering = electrics['steering_input']
+	
+		vehicle_control = [
+				throttle,
+				brake,
+				steering
+		]
+  
+		# print(vehicle_control)
+  
+		data_publisher_instance.vehicle_control(vehicle_control)
 		
 		next_time = max(0, vehicle_interval - (time.time() - base_time))
 		time.sleep(next_time)
