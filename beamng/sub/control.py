@@ -5,10 +5,33 @@ import time
 from msg.autoware_control_msgs import Control
 from shared import *
 
+class PIDController:
+    def __init__(self, Kp, Ki, Kd, output_min=-1, output_max=1):
+        self.Kp = Kp
+        self.Ki = Ki
+        self.Kd = Kd
+        self.output_min = output_min
+        self.output_max = output_max
+        self.previous_error = 0
+        self.integral = 0
+        
+    def calculate(self, target, current, dt):
+        error = target - current
+        self.integral += error * dt
+        derivative = (error - self.previous_error) / dt
+        self.previous_error = error
+        
+        output = (self.Kp * error) + (self.Ki * self.integral) + (self.Kd * derivative)
+        
+        output = max(self.output_min, min(self.output_max, output))
+        
+        return output
+    
+throttle_pid = PIDController(Kp = 20, Ki = 0.0, Kd = 0.0)
+
 last_time = None
 update_interval = 0.05 # 20Hzの更新間隔
-steering_pid = PID(kp = 50.0, ki = 5.0, kd = 0.0, outputLimits = (-100, 100))
-throttle_pid = PID(kp = 50.0, ki = 5.0, kd = 0.0, outputLimits = (-100, 100))
+
 vehicle_instance = VehicleSingleton()
 vehicle_state_instance = VehicleStateSingleton()
 
@@ -17,11 +40,12 @@ def control_callback(sample: zenoh.Sample):
 
     current_time = time.time()
 
+    delta_time = 0
     if last_time is not None:
         delta_time = current_time - last_time
-        print(f"Delta Time: {delta_time:.4f} seconds")
 
         if delta_time < update_interval:
+            time.sleep(update_interval - delta_time)
             return
 
     last_time = current_time
@@ -32,29 +56,32 @@ def control_callback(sample: zenoh.Sample):
     payload_bytes = bytes(sample.payload)
     payload = bytearray(payload_bytes)
     control_cmd = Control.deserialize(payload)
-
-    # 目標速度(m/s)、ステアリング(rad)
+    
+    # steering
+    steering = control_cmd.lateral.steering_tire_angle
+    steering = max(-0.7, min(steering, 0.7))
+    normalized_steering = -1 * (steering / 0.7)
+    
+    # throttle, brake
     target_velocity = control_cmd.longitudinal.velocity
-    target_steering_tire = control_cmd.lateral.steering_tire_angle
-
-    throttle = throttle_pid(setpoint = target_velocity, processValue = vehicle_state_instance.get_longitudinal_vel())
-    steering = steering_pid(setpoint = target_steering_tire, processValue = vehicle_state_instance.get_steering_tire_angle())
-
-    throttle = max(-100, min(throttle, 100))
-    throttle_command = throttle / 100.0
-
-    steering = max(-100, min(steering, 100))
-    steering_command = -steering / 100.0
-        
-    if 0 <= throttle_command <= 1:
+    current_speed = vehicle_state_instance.get_longitudinal_vel()
+    throttle = throttle_pid.calculate(
+        target=target_velocity,
+        current=current_speed,
+        dt=delta_time
+    )
+    
+    # print(target_velocity)
+    
+    if throttle >= 0:
+        throttle_command = throttle
         brake_command = 0
     else:
-        brake_command = -throttle_command  # 負のスロットル値に応じてブレーキを設定
         throttle_command = 0
-    
+        brake_command = -throttle
     
     vehicle_instance.set_control(
-        steering=steering_command,
+        steering=normalized_steering,
         throttle=throttle_command,
-        brake=brake_command
+        brake=0
     )
