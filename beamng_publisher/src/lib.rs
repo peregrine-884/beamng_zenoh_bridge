@@ -390,8 +390,6 @@ impl BeamngPublisher {
         brake: f32,
         steering: f32,
     ) -> PyResult<()> {
-        println!("Throttle: {}, Brake: {}, Steering: {}", throttle, brake, steering);
-        
         let mut publisher = self.vehicle_control_publisher.lock().unwrap();
 
         let now = SystemTime::now()
@@ -530,62 +528,62 @@ impl BeamngPublisher {
             .wait()
             .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
 
-        let mut battery_pub = self.battery_publisher.lock().unwrap();
-        let battery_msgs = {
-            let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get current time");
-            let time = builtin_interfaces::Time {
-                sec: now.as_secs() as i32,
-                nanosec: now.subsec_nanos(),
-            };
-            BatteryStatus {
-                stamp: time.clone(),
-                energy_level: battery,
-            }
-        };
-        let serialized_battery = cdr::serialize::<_, _, CdrLe>(&battery_msgs, Infinite)
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        battery_pub
-            .put(serialized_battery)
-            .wait()
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+        // let mut battery_pub = self.battery_publisher.lock().unwrap();
+        // let battery_msgs = {
+        //     let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get current time");
+        //     let time = builtin_interfaces::Time {
+        //         sec: now.as_secs() as i32,
+        //         nanosec: now.subsec_nanos(),
+        //     };
+        //     BatteryStatus {
+        //         stamp: time.clone(),
+        //         energy_level: battery,
+        //     }
+        // };
+        // let serialized_battery = cdr::serialize::<_, _, CdrLe>(&battery_msgs, Infinite)
+        //     .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // battery_pub
+        //     .put(serialized_battery)
+        //     .wait()
+        //     .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
 
-        let mut hazard_pub = self.hazard_publisher.lock().unwrap();
-        let hazard_msgs = {
-            let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get current time");
-            let time = builtin_interfaces::Time {
-                sec: now.as_secs() as i32,
-                nanosec: now.subsec_nanos(),
-            };
-            autoware_vehicle_msgs::HazardLightsReport {
-                stamp: time.clone(),
-                report: hazard,
-            }
-        };
-        let serialized_hazard = cdr::serialize::<_, _, CdrLe>(&hazard_msgs, Infinite)
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        hazard_pub
-            .put(serialized_hazard)
-            .wait()
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+        // let mut hazard_pub = self.hazard_publisher.lock().unwrap();
+        // let hazard_msgs = {
+        //     let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get current time");
+        //     let time = builtin_interfaces::Time {
+        //         sec: now.as_secs() as i32,
+        //         nanosec: now.subsec_nanos(),
+        //     };
+        //     autoware_vehicle_msgs::HazardLightsReport {
+        //         stamp: time.clone(),
+        //         report: hazard,
+        //     }
+        // };
+        // let serialized_hazard = cdr::serialize::<_, _, CdrLe>(&hazard_msgs, Infinite)
+        //     .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // hazard_pub
+        //     .put(serialized_hazard)
+        //     .wait()
+        //     .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
 
-        let mut turn_signal_pub = self.turn_signal_publisher.lock().unwrap();
-        let turn_signal_msgs = {
-            let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get current time");
-            let time = builtin_interfaces::Time {
-                sec: now.as_secs() as i32,
-                nanosec: now.subsec_nanos(),
-            };
-            autoware_vehicle_msgs::TurnIndicatorsReport {
-                stamp: time.clone(),
-                report: turn_signal,
-            }
-        };
-        let serialized_turn_signal = cdr::serialize::<_, _, CdrLe>(&turn_signal_msgs, Infinite)
-            .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-        turn_signal_pub
-            .put(serialized_turn_signal)
-            .wait()
-            .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+        // let mut turn_signal_pub = self.turn_signal_publisher.lock().unwrap();
+        // let turn_signal_msgs = {
+        //     let now = SystemTime::now().duration_since(UNIX_EPOCH).expect("Unable to get current time");
+        //     let time = builtin_interfaces::Time {
+        //         sec: now.as_secs() as i32,
+        //         nanosec: now.subsec_nanos(),
+        //     };
+        //     autoware_vehicle_msgs::TurnIndicatorsReport {
+        //         stamp: time.clone(),
+        //         report: turn_signal,
+        //     }
+        // };
+        // let serialized_turn_signal = cdr::serialize::<_, _, CdrLe>(&turn_signal_msgs, Infinite)
+        //     .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
+        // turn_signal_pub
+        //     .put(serialized_turn_signal)
+        //     .wait()
+        //     .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
     
         Ok(())
     }

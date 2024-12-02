@@ -14,6 +14,7 @@ from pub.lidar import send_lidar_data
 from pub.imu import send_imu_data
 from pub.vehicle_info import send_vehicle_info_data
 from pub.clock import send_clock_data
+from pub.camera import send_camera_data
 
 from sub.control import control_callback
 from sub.hazard_lights import hazard_lights_callback
@@ -134,30 +135,26 @@ def main():
     imu_thread = threading.Thread(target=send_imu_data, args=(imu,))
     vehicle_info_thread = threading.Thread(target=send_vehicle_info_data)
     clock_thread = threading.Thread(target=send_clock_data)
-    # camera_thread = threading.Thread(target=send_camera_data, args=(camera,))
+    camera_thread = threading.Thread(target=send_camera_data, args=(camera,))
 
     stop_thread.start()
     lidar_thread.start()
     imu_thread.start()
     vehicle_info_thread.start()
     clock_thread.start()
-    # camera_thread.start()
+    camera_thread.start()
     
-    # threads = [stop_thread, lidar_thread, imu_thread, vehicle_info_thread, clock_thread]
-    # threads = [clock_thread, lidar_thread]
-    # while any(thread.is_alive() for thread in threads):
-    #     for thread in threads:
-    #         if thread.is_alive():
-    #             print(f"{thread.name} is running.")
-    #         else:
-    #             print(f"{thread.name} has finished.")
-    #     time.sleep(1)
+    threads = [stop_thread, lidar_thread, imu_thread, vehicle_info_thread, clock_thread, camera_thread]
+    while any(thread.is_alive() for thread in threads):
+        print(", ".join(f"{thread.name} {'is running' if thread.is_alive() else 'has finished'}" for thread in threads))
+        time.sleep(1)
     
     stop_thread.join()
     lidar_thread.join()
     imu_thread.join()
     vehicle_info_thread.join()
     clock_thread.join()
+    camera_thread.join()
     
     lidar.remove()
     imu.remove()

@@ -9,7 +9,7 @@ def send_vehicle_info_data():
 	stop_event_instance = StopEventSingleton()
 	vehicle_state_instance = VehicleStateSingleton()
 	
-	vehicle_hz = 20
+	vehicle_hz = 10
 	vehicle_interval = 1.0 / vehicle_hz
 	base_time = time.time()
 	
