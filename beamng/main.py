@@ -19,6 +19,7 @@ from pub.camera import send_camera_data
 from sub.control import control_callback
 from sub.hazard_lights import hazard_lights_callback
 from sub.turn_indicators import turn_indicators_callback
+from sub.model_control import model_control_callback
 
 def main():    
     # beamNG
@@ -29,9 +30,7 @@ def main():
     bng = beamng.open(launch=False)
     
     scenario = Scenario('west_coast_usa', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    
-    vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
-    
+    vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue') 
     scenario.add_vehicle(vehicle,
         pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
     )
@@ -40,6 +39,12 @@ def main():
     # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
     # scenario.add_vehicle(vehicle,
     #         pos=(-97.2, -304.2, 74.0), rot_quat=(0,0,0.3826834,0.9238795)
+    # )
+    
+    # scenario = Scenario('c1', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
+    # scenario.add_vehicle(vehicle,
+    #         pos=(1194.884, 1451.000, 841.000), rot_quat=(0.0, 0.0, 0.42261826, 0.90630779)
     # )
     
     scenario.make(bng)
@@ -106,13 +111,16 @@ def main():
     config = zenoh.Config.from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
     session = zenoh.open(config)
     key = 'control/command/control_cmd'
-    control_sub = session.declare_subscriber(key, control_callback)
+    # control_sub = session.declare_subscriber(key, control_callback)
     
     key = 'control/command/turn_indicators_cmd'
     turn_indicators_sub = session.declare_subscriber(key, turn_indicators_callback)
     
     key = 'control/command/hazard_lights_cmd'
     hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
+    
+    key = 'model/vehicle_control'
+    model_vehicle_control_sub = session.declare_subscriber(key, model_control_callback)
     
     stop_event = threading.Event()
     stop_thread = threading.Thread(target=lambda: keyboard.wait('q') or stop_event.set())
@@ -161,9 +169,10 @@ def main():
     camera.remove()
     # bng.close()
     
-    control_sub.undeclare()
+    # control_sub.undeclare()
     turn_indicators_sub.undeclare()
     hazard_lights_sub.undeclare()
+    model_vehicle_control_sub.undeclare()
     session.close()
 
 if __name__ == '__main__':
