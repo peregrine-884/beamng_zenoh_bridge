@@ -1,23 +1,32 @@
 use std::sync::{Arc, Mutex};
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
+use numpy::{PyArray2};
 use zenoh::{prelude::*, Config, Session};
 use zenoh::pubsub::Publisher;
 
+use crate::publisher::camera;
+use crate::publisher::clock;
+use crate::publisher::imu;
+use crate::publisher::lidar;
+use crate::publisher::vehicle_control;
+use crate::publisher::vehicle_info;
+
 #[pyclass(module = "beamng_data_publisher")]
 pub struct BeamngDataPublisher {
-  session: Arc<Session>,
-  camera_publisher: Arc<Mutex<Publisher<'static>>>,
-  clock_publisher: Arc<Mutex<Publisher<'static>>>,
-  imu_publisher: Arc<Mutex<Publisher<'static>>>,
-  lidar_publisher: Arc<Mutex<Publisher<'static>>>,
-  vehicle_control_publisher: Arc<Mutex<Publisher<'static>>>,
-  battery_publisher: Arc<Mutex<Publisher<'static>>>,
-  control_mode_publisher: Arc<Mutex<Publisher<'static>>>,
-  gear_publisher: Arc<Mutex<Publisher<'static>>>,
-  hazard_publisher: Arc<Mutex<Publisher<'static>>>,
-  turn_signal_publisher: Arc<Mutex<Publisher<'static>>>,
-  steering_publisher: Arc<Mutex<Publisher<'static>>>,
-  velocity_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub session: Arc<Session>,
+  pub camera_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub clock_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub imu_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub lidar_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub vehicle_control_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub battery_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub control_mode_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub gear_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub hazard_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub turn_signal_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub steering_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub velocity_publisher: Arc<Mutex<Publisher<'static>>>,
 }
 
 #[pymethods]
@@ -117,5 +126,67 @@ impl BeamngDataPublisher {
       steering_publisher,
       velocity_publisher,
     })
+  }
+
+  fn publish_camera_data(&self, data: &PyBytes) -> PyResult<()> {
+    camera::publish_camera_data(self.camera_publisher.clone(), data)
+  }
+
+  fn publish_clock_data(&self) ->PyResult<()> {
+    clock::publish_clock_data(self.clock_publisher.clone())
+  }
+
+  fn publish_imu_data(&self, imu_data: Vec<f64>) -> PyResult<()> {
+    imu::publish_imu_data(self.imu_publisher.clone(), imu_data)
+  }
+
+  fn publish_lidar_data(&self, pointcloud: &PyArray2<f32>) -> PyResult<()> {
+    lidar::publish_lidar_data(self.lidar_publisher.clone(), pointcloud)
+  }
+
+  fn publish_vehicle_control(
+    &self,
+    throttle: f32,
+    brake: f32,
+    steering: f32,
+  ) -> PyResult<()> {
+    vehicle_control::publish_vehicle_control(
+      self.vehicle_control_publisher.clone(),
+      throttle,
+      brake,
+      steering,
+    )
+  }
+
+  fn publish_vehicle_info(
+    &self,
+    longitudinal_vel: f32,
+    lateral_vel: f32,
+    heading_rate: f32,
+    steering_tire_angle: f32,
+    gear: u8,
+    control_mode: u8,
+    battery: f32,
+    hazard: u8,
+    turn_signal: u8,
+  ) -> PyResult<()> {
+    vehicle_info::publish_vehicle_info(
+      self.velocity_publisher.clone(),
+      self.steering_publisher.clone(),
+      self.gear_publisher.clone(),
+      self.control_mode_publisher.clone(),
+      self.battery_publisher.clone(),
+      self.hazard_publisher.clone(),
+      self.turn_signal_publisher.clone(),
+      longitudinal_vel,
+      lateral_vel,
+      heading_rate,
+      steering_tire_angle,
+      gear,
+      control_mode,
+      battery,
+      hazard,
+      turn_signal,
+    )
   }
 }

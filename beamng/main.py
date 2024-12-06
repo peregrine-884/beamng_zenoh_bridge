@@ -4,7 +4,7 @@ from beamngpy.sensors import Lidar, Electrics, Camera, AdvancedIMU
 import keyboard
 import threading
 import random
-import beamng_publisher
+import zenoh_bridge
 import zenoh
 import time
 
@@ -126,7 +126,7 @@ def main():
     stop_thread = threading.Thread(target=lambda: keyboard.wait('q') or stop_event.set())
     
     data_publisher_instance = DataPublisherSingleton()
-    data_publisher_instance.set_data_publisher(beamng_publisher.BeamngPublisher())
+    data_publisher_instance.set_data_publisher(zenoh_bridge.BeamngDataPublisher())
     
     vehicle_instance = VehicleSingleton()
     vehicle_instance.set_vehicle(vehicle)
@@ -176,5 +176,4 @@ def main():
     session.close()
 
 if __name__ == '__main__':
-    
     main()

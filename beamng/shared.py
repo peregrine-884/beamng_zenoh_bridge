@@ -12,22 +12,22 @@ class DataPublisherSingleton:
     self.data_publisher = new_value
     
   def lidar(self, pointcloud):
-    self.data_publisher.process_pointcloud(pointcloud)
+    self.data_publisher.publish_lidar_data(pointcloud)
     
   def imu(self, imu_data):
-    self.data_publisher.process_imu(imu_data)
+    self.data_publisher.publish_imu_data(imu_data)
     
   def vehicle_info(self, vehicle_info):
-    self.data_publisher.process_vehicle_status(*vehicle_info)
+    self.data_publisher.publish_vehicle_info(*vehicle_info)
     
   def vehicle_control(self, vehicle_control):
-    self.data_publisher.process_vehicle_control(*vehicle_control)
+    self.data_publisher.publish_vehicle_control(*vehicle_control)
     
   def clock(self):
-    self.data_publisher.publish_clock()
+    self.data_publisher.publish_clock_data()
     
   def camera(self, image):
-    self.data_publisher.process_camera(image)
+    self.data_publisher.publish_camera_data(image)
     
     
 class VehicleSingleton:

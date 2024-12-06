@@ -1,15 +1,16 @@
 [package]
-name = "beamng_publisher"
+name = "zenoh_bridge"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "beamng_publisher"
+name = "zenoh_bridge"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.21.2", features = ["extension-module"] }
 serde = { version = "1.0.210", features = ["derive"] }
+winapi = { version = "0.3", features = ["winerror"] }
 numpy = "=0.21.0"
 cdr = "0.2.4"
 zenoh = "=1.0.0-alpha.6"
