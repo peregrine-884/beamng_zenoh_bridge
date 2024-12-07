@@ -26,8 +26,11 @@ def send_lidar_data(lidar):
     num_points = pointcloud.shape[0]
     
     if pointcloud is not None and len(pointcloud) > 0:
-      vehicle_instance.get_sensor_data()
       state = vehicle_instance.get_state()
+      
+      if state is None:
+        continue
+      
       position = state["pos"]
       relative_pointcloud = np.array(pointcloud - position + offset, dtype=np.float32)
       

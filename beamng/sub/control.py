@@ -29,12 +29,13 @@ class PIDController:
 throttle_pid = PIDController(Kp = 20, Ki = 0.0, Kd = 0.0)
 
 last_time = None
-update_interval = 0.05 # 20Hzの更新間隔
+# update_interval = 0.05 # 20Hzの更新間隔
 
 vehicle_instance = VehicleSingleton()
 vehicle_state_instance = VehicleStateSingleton()
 
 def control_callback(sample: zenoh.Sample):
+    print("--------------------------------------- control_callback")
     global last_time
 
     current_time = time.time()
@@ -43,9 +44,9 @@ def control_callback(sample: zenoh.Sample):
     if last_time is not None:
         delta_time = current_time - last_time
 
-        if delta_time < update_interval:
-            time.sleep(update_interval - delta_time)
-            return
+        # if delta_time < update_interval:
+        #     time.sleep(update_interval - delta_time)
+        #     return
 
     last_time = current_time
     

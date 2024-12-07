@@ -10,16 +10,17 @@ import time
 
 from shared import *
 
-from pub.lidar import send_lidar_data
-from pub.imu import send_imu_data
-from pub.vehicle_info import send_vehicle_info_data
-from pub.clock import send_clock_data
 from pub.camera import send_camera_data
+from pub.clock import send_clock_data
+from pub.imu import send_imu_data
+from pub.lidar import send_lidar_data
+from pub.vehicle_control import send_vehicle_control_data
+from pub.vehicle_info import send_vehicle_info_data
 
 from sub.control import control_callback
 from sub.hazard_lights import hazard_lights_callback
-from sub.turn_indicators import turn_indicators_callback
 from sub.model_control import model_control_callback
+from sub.turn_indicators import turn_indicators_callback
 
 def main():    
     # beamNG
@@ -110,17 +111,18 @@ def main():
     # zenoh
     config = zenoh.Config.from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
     session = zenoh.open(config)
-    key = 'control/command/control_cmd'
-    # control_sub = session.declare_subscriber(key, control_callback)
+    # key = 'control/command/control_cmd'
+    key = 'rate_limitted/control/command/control_cmd'
+    control_sub = session.declare_subscriber(key, control_callback)
     
-    key = 'control/command/turn_indicators_cmd'
-    turn_indicators_sub = session.declare_subscriber(key, turn_indicators_callback)
+    # key = 'control/command/turn_indicators_cmd'
+    # turn_indicators_sub = session.declare_subscriber(key, turn_indicators_callback)
     
-    key = 'control/command/hazard_lights_cmd'
-    hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
+    # key = 'control/command/hazard_lights_cmd'
+    # hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
     
-    key = 'model/vehicle_control'
-    model_vehicle_control_sub = session.declare_subscriber(key, model_control_callback)
+    # key = 'model/vehicle_control'
+    # model_vehicle_control_sub = session.declare_subscriber(key, model_control_callback)
     
     stop_event = threading.Event()
     stop_thread = threading.Thread(target=lambda: keyboard.wait('q') or stop_event.set())
@@ -139,40 +141,55 @@ def main():
     keyboard.on_press_key('p', 
         lambda event: vehicle_state_instance.set_manual_mode(not vehicle_state_instance.get_manual_mode()))
     
-    lidar_thread = threading.Thread(target=send_lidar_data, args=(lidar,))
-    imu_thread = threading.Thread(target=send_imu_data, args=(imu,))
-    vehicle_info_thread = threading.Thread(target=send_vehicle_info_data)
-    clock_thread = threading.Thread(target=send_clock_data)
     camera_thread = threading.Thread(target=send_camera_data, args=(camera,))
+    clock_thread = threading.Thread(target=send_clock_data)
+    imu_thread = threading.Thread(target=send_imu_data, args=(imu,))
+    lidar_thread = threading.Thread(target=send_lidar_data, args=(lidar,))
+    vehicle_control_thread = threading.Thread(target=send_vehicle_control_data)
+    vehicle_info_thread = threading.Thread(target=send_vehicle_info_data)
+    get_vehicle_data_thread = threading.Thread(target=get_sensor_data)
 
     stop_thread.start()
-    lidar_thread.start()
-    imu_thread.start()
-    vehicle_info_thread.start()
-    clock_thread.start()
     camera_thread.start()
+    clock_thread.start()
+    imu_thread.start()
+    lidar_thread.start()
+    vehicle_control_thread.start()
+    vehicle_info_thread.start()
+    get_vehicle_data_thread.start()
     
-    threads = [stop_thread, lidar_thread, imu_thread, vehicle_info_thread, clock_thread, camera_thread]
+    threads = [
+        stop_thread,
+        camera_thread,
+        clock_thread,
+        imu_thread,
+        lidar_thread,
+        vehicle_control_thread,
+        vehicle_info_thread,
+        get_vehicle_data_thread
+    ]
     while any(thread.is_alive() for thread in threads):
         print(", ".join(f"{thread.name} {'is running' if thread.is_alive() else 'has finished'}" for thread in threads))
         time.sleep(1)
     
     stop_thread.join()
-    lidar_thread.join()
-    imu_thread.join()
-    vehicle_info_thread.join()
-    clock_thread.join()
     camera_thread.join()
+    clock_thread.join()
+    imu_thread.join()
+    lidar_thread.join()
+    vehicle_control_thread.join()
+    vehicle_info_thread.join()
+    get_vehicle_data_thread.join()
     
     lidar.remove()
     imu.remove()
     camera.remove()
     # bng.close()
     
-    # control_sub.undeclare()
-    turn_indicators_sub.undeclare()
-    hazard_lights_sub.undeclare()
-    model_vehicle_control_sub.undeclare()
+    control_sub.undeclare()
+    # turn_indicators_sub.undeclare()
+    # hazard_lights_sub.undeclare()
+    # model_vehicle_control_sub.undeclare()
     session.close()
 
 if __name__ == '__main__':

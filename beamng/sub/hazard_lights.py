@@ -7,6 +7,8 @@ vehicle_instance = VehicleSingleton()
 vehicle_state_instance = VehicleStateSingleton()
 
 def hazard_lights_callback(sample: zenoh.Sample):
+    print("--------------------------------------- hazard_lights_callback")
+    
     payload_bytes = bytes(sample.payload)
     payload = bytearray(payload_bytes)
     hazard_lights_cmd = HazardLightsCommand.deserialize(payload).command

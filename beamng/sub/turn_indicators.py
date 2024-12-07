@@ -7,6 +7,8 @@ vehicle_instance = VehicleSingleton()
 vehicle_state_instance = VehicleStateSingleton()
 
 def turn_indicators_callback(sample: zenoh.Sample):
+    print("--------------------------------------- turn_indicators_callback")
+    
     payload_bytes = bytes(sample.payload)
     payload = bytearray(payload_bytes)
     turn_indicators_cmd = TurnIndicatorsCommand.deserialize(payload).command

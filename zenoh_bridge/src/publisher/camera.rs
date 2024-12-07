@@ -36,7 +36,7 @@ pub fn publish_camera_data(
     header: header,
     height: height,
     width: width,
-    encoding: "rgb8".to_string(),
+    encoding: "rgba8".to_string(),
     is_bigendian: 0 as u8,
     step: width * 4 as u32,
     data: data_slice.to_vec(),

@@ -6,7 +6,7 @@ def send_camera_data(camera):
   data_publisher = DataPublisherSingleton()
   stop_event_instance = StopEventSingleton()
   
-  camera_hz = 10
+  camera_hz = 50
   camera_interval = 1.0 / camera_hz
   base_time = time.time()
   

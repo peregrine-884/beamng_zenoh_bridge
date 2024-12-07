@@ -1,3 +1,5 @@
+import time
+
 class DataPublisherSingleton:
   _instance = None
   
@@ -41,6 +43,7 @@ class VehicleSingleton:
   
   def set_vehicle(self, new_value):
     self.vehicle = new_value
+    self.sensor_initialized = False
     
   def set_control(self, steering, throttle, brake):
     self.vehicle.control(
@@ -58,12 +61,37 @@ class VehicleSingleton:
     
   def get_sensor_data(self):
     self.vehicle.sensors.poll()
+    self.sensor_initialized = True
     
   def get_state(self):
+    if not self.sensor_initialized:
+      return None
     return self.vehicle.sensors['state']
   
   def get_electrics(self):
+    if not self.sensor_initialized:
+      return None
     return self.vehicle.sensors['electrics']
+  
+def get_sensor_data():
+  stop_event_instance = StopEventSingleton()
+  vehicle_instance = VehicleSingleton()
+  
+  frequency = 10
+  interval = 1.0 / frequency
+  base_time = time.time()
+  
+  while True:
+    if stop_event_instance.get_value():
+      break
+    
+    print("get_sensor_data() 開始")
+    vehicle_instance.get_sensor_data()
+    print("get_sensor_data() 終了")
+    
+    next_time = max(0, interval - (time.time() - base_time))
+    time.sleep(next_time)
+    base_time = time.time()
 
 class StopEventSingleton:
     _instance = None

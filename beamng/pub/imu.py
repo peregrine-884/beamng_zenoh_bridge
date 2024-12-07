@@ -17,19 +17,29 @@ def send_imu_data(imu):
     if stop_event_instance.get_value():
       break
     
+    print('aaaa')
     data = imu.poll()
+    print('0000')
     
     accRaw = np.array(data['accRaw'])
     angVel = np.array(data['angVel'])
     
+    # print('1111')
+    
     heading_rate = angVel[2]
     vehicle_state_instance.set_heading_rate(heading_rate)
+    
+    # print('2222')
     
     dirX = data['dirX']
     dirY = data['dirY']
     dirZ = data['dirZ']
     
+    # print('3333')
+    
     rotation_matrix = np.array([dirX, dirY, dirZ]).T
+    
+    # print('4444')
     
     rotation = R.from_matrix(rotation_matrix)
     euler_angles = rotation.as_euler('xyz', degrees=True)
@@ -38,6 +48,8 @@ def send_imu_data(imu):
     euler_angles[2] += 135
     adjusted_rotation = R.from_euler('xyz', [euler_angles[0], euler_angles[1], euler_angles[2]], degrees=True)
     adjusted_rotation_matrix = adjusted_rotation.as_matrix()
+    
+    # print('5555')
     
     # accLocal = adjusted_rotation_matrix @ accRaw
     # angVelLocal = adjusted_rotation_matrix @ angVel
@@ -67,13 +79,20 @@ def send_imu_data(imu):
     R_combined = R_x @ R_y @ R_z
     accLocal = R_combined @ accRaw
 
-
     quaternion = adjusted_rotation.as_quat()
+    
+    # print('6666')
     
     imu_data = quaternion.tolist() + angVel.tolist() + accLocal.tolist()
     
+    # print('7777')
+    
     data_publisher_instance.imu(imu_data)
+    
+    # print('8888')
     
     next_time = max(0, imu_interval - (time.time() - base_time))
     time.sleep(next_time)
     base_time = time.time()
+    
+    # print('9999')
