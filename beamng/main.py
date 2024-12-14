@@ -112,8 +112,8 @@ def main():
     config = zenoh.Config.from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
     session = zenoh.open(config)
     # key = 'control/command/control_cmd'
-    key = 'rate_limitted/control/command/control_cmd'
-    control_sub = session.declare_subscriber(key, control_callback)
+    # key = 'rate_limitted/control/command/control_cmd'
+    # control_sub = session.declare_subscriber(key, control_callback)
     
     # key = 'control/command/turn_indicators_cmd'
     # turn_indicators_sub = session.declare_subscriber(key, turn_indicators_callback)
@@ -121,8 +121,8 @@ def main():
     # key = 'control/command/hazard_lights_cmd'
     # hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
     
-    # key = 'model/vehicle_control'
-    # model_vehicle_control_sub = session.declare_subscriber(key, model_control_callback)
+    key = 'rate_limitted/control/command/actuation_cmd'
+    model_vehicle_control_sub = session.declare_subscriber(key, model_control_callback)
     
     stop_event = threading.Event()
     stop_thread = threading.Thread(target=lambda: keyboard.wait('q') or stop_event.set())
@@ -138,7 +138,7 @@ def main():
     
     vehicle_state_instance = VehicleStateSingleton()
     
-    keyboard.on_press_key('p', 
+    keyboard.on_press_key('s', 
         lambda event: vehicle_state_instance.set_manual_mode(not vehicle_state_instance.get_manual_mode()))
     
     camera_thread = threading.Thread(target=send_camera_data, args=(camera,))
@@ -186,10 +186,10 @@ def main():
     camera.remove()
     # bng.close()
     
-    control_sub.undeclare()
+    # control_sub.undeclare()
     # turn_indicators_sub.undeclare()
     # hazard_lights_sub.undeclare()
-    # model_vehicle_control_sub.undeclare()
+    model_vehicle_control_sub.undeclare()
     session.close()
 
 if __name__ == '__main__':

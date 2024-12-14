@@ -2,11 +2,11 @@ use std::sync::{Arc, Mutex};
 use pyo3::prelude::*;
 use zenoh::Wait;
 use zenoh::pubsub::Publisher;
-use zenoh_ros_type::{builtin_interfaces};
+use zenoh_ros_type::{builtin_interfaces, std_msgs};
 use cdr::{CdrLe, Infinite};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::msg::vehicle_control_stamped;
+use crate::msg::actuation_status_stamped;
 
 pub fn publish_vehicle_control(
   vehicle_control_publisher: Arc<Mutex<Publisher<'static>>>,
@@ -25,14 +25,23 @@ pub fn publish_vehicle_control(
     nanosec: now.subsec_nanos(),
   };
 
-  let vehicle_control = vehicle_control_stamped::VehicleControl {
+  let header = std_msgs::Header {
     stamp: time,
-    throttle: throttle,
-    brake: brake,
-    steering: steering,
+    frame_id: "base_link".to_string(),
   };
 
-  let encoded = cdr::serialize::<_, _, CdrLe>(&vehicle_control, Infinite)
+  let status = actuation_status_stamped::ActuationStatus {
+    accel_status: throttle as f64,
+    brake_status: brake as f64,
+    steer_status: steering as f64,
+  };
+
+  let actuation_status = actuation_status_stamped::ActuationStatusStamped {
+    header: header,
+    status: status,
+  };
+
+  let encoded = cdr::serialize::<_, _, CdrLe>(&actuation_status, Infinite)
     .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
 
   publisher

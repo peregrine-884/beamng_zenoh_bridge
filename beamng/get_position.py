@@ -29,14 +29,14 @@ def main():
     beamng = BeamNGpy('localhost', 64256)
     bng = beamng.open(launch=False)
     
-    scenario = Scenario('2k_tsukuba_s', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    # scenario = Scenario('2k_tsukuba_s', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
     
-    # scenario = Scenario('tech_ground', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    scenario = Scenario('tech_ground', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
     
     vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
     
     scenario.add_vehicle(vehicle,
-        pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
+        pos=(-1020.482, 0.000, 1.000), rot_quat=(0.0, 0.0, -0.70710678, 0.70710678)
     )
     
     # scenario.add_vehicle(vehicle, pos=(0, 0, 0))
@@ -69,9 +69,17 @@ def main():
     vehicle.sensors.attach('electrics', Electrics())
     
     while True:
-      time.sleep(1)
-      
-      print(lidar.get_position())
+        time.sleep(1)
+        
+        vehicle.control(steering=0)
+        
+        position = lidar.get_position()
+        print(position)
+
+        if position[0] >= 1050:
+            vehicle.teleport(
+                pos=(-1020.482, 0.000, 1.000), rot_quat=(0.0, 0.0, -0.70710678, 0.70710678), reset=True
+            )
     
     lidar.remove()
     # bng.close()

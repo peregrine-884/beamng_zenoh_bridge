@@ -17,9 +17,7 @@ def send_imu_data(imu):
     if stop_event_instance.get_value():
       break
     
-    print('aaaa')
     data = imu.poll()
-    print('0000')
     
     accRaw = np.array(data['accRaw'])
     angVel = np.array(data['angVel'])

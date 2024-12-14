@@ -31,6 +31,8 @@ def send_vehicle_control_data():
         steering
     ]
     
+    # print(vehicle_control)
+    
     data_publisher_instance.vehicle_control(vehicle_control)
     
     next_time = max(0, vehicle_control_interval - (time.time() - base_time))

@@ -64,7 +64,7 @@ impl BeamngDataPublisher {
     let lidar_publisher = Arc::new(Mutex::new(lidar_publisher));
 
     let vehicle_control_publisher = session
-      .declare_publisher("vehicle_control")
+      .declare_publisher("vehicle/status/actuation_status")
       .wait()
       .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
     let vehicle_control_publisher = Arc::new(Mutex::new(vehicle_control_publisher));

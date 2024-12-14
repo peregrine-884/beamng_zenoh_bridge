@@ -85,9 +85,9 @@ def get_sensor_data():
     if stop_event_instance.get_value():
       break
     
-    print("get_sensor_data() 開始")
+    # print("get_sensor_data() 開始")
     vehicle_instance.get_sensor_data()
-    print("get_sensor_data() 終了")
+    # print("get_sensor_data() 終了")
     
     next_time = max(0, interval - (time.time() - base_time))
     time.sleep(next_time)
@@ -118,7 +118,7 @@ class VehicleStateSingleton:
             cls._instance.longitudinal_vel = 0
             cls._instance.steering_tire_angle = 0
             cls._instance.heading_rate = 0
-            cls._instance.manual_mode = True
+            cls._instance.manual_mode = False
             cls._instance.enable_left = False
             cls._instance.enable_right = False
             cls._instance.enable_hazard = False
