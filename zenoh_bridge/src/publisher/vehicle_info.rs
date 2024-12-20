@@ -6,7 +6,7 @@ use zenoh_ros_type::{builtin_interfaces, std_msgs, autoware_vehicle_msgs};
 use cdr::{CdrLe, Infinite};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::msg::battery_status;
+use crate::msg::tier4_vehicle_msgs;
 
 pub fn publish_vehicle_info (
   velocity_publisher: Arc<Mutex<Publisher<'static>>>,
@@ -142,7 +142,7 @@ pub fn publish_vehicle_info (
       nanosec: now.subsec_nanos(),
     };
 
-    battery_status::BatteryStatus {
+    tier4_vehicle_msgs::BatteryStatus {
       stamp: time.clone(),
       energy_level: battery,
     }

@@ -10,7 +10,7 @@ def accel_map():
   exit_loop = False  # ループを抜けるためのフラグ
   flag = False
   
-  accels = [round(i * 0.05, 2) for i in range(1, 21)]
+  accels = [round(i * 0.05, 2) for i in range(1, 2)]
   accels.reverse()
 
   for accel in accels:
@@ -44,7 +44,7 @@ def accel_map():
                   
                   vehicle_state_instance.set_manual_mode(False)
                   
-                  flag = True
+                  flag = False
                   break
 
               state = vehicle_instance.get_state()

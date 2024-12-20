@@ -6,7 +6,7 @@ use zenoh_ros_type::{builtin_interfaces, std_msgs};
 use cdr::{CdrLe, Infinite};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::msg::actuation_status_stamped;
+use crate::msg::tier4_vehicle_msgs;
 
 pub fn publish_vehicle_control(
   vehicle_control_publisher: Arc<Mutex<Publisher<'static>>>,
@@ -30,13 +30,13 @@ pub fn publish_vehicle_control(
     frame_id: "base_link".to_string(),
   };
 
-  let status = actuation_status_stamped::ActuationStatus {
+  let status = tier4_vehicle_msgs::ActuationStatus {
     accel_status: throttle as f64,
     brake_status: brake as f64,
     steer_status: steering as f64,
   };
 
-  let actuation_status = actuation_status_stamped::ActuationStatusStamped {
+  let actuation_status = tier4_vehicle_msgs::ActuationStatusStamped {
     header: header,
     status: status,
   };

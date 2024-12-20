@@ -9,7 +9,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.21.2", features = ["extension-module"] }
-serde = { version = "1.0.210", features = ["derive"] }
 winapi = { version = "0.3", features = ["winerror"] }
 numpy = "=0.21.0"
 cdr = "0.2.4"
@@ -39,3 +38,5 @@ zenoh-task = "=1.0.0-alpha.6"
 zenoh-transport = "=1.0.0-alpha.6"
 zenoh-util = "=1.0.0-alpha.6"
 zenoh-ros-type = "=0.3.4"
+serde = "=1.0.216"
+serde_derive = "1.0.216"

@@ -31,6 +31,9 @@ class DataPublisherSingleton:
   def camera(self, image):
     self.data_publisher.publish_camera_data(image)
     
+  def gps(self, gps):
+    self.data_publisher.publish_gps(*gps)
+    
     
 class VehicleSingleton:
   _instance = None
@@ -118,7 +121,7 @@ class VehicleStateSingleton:
             cls._instance.longitudinal_vel = 0
             cls._instance.steering_tire_angle = 0
             cls._instance.heading_rate = 0
-            cls._instance.manual_mode = False
+            cls._instance.manual_mode = True
             cls._instance.enable_left = False
             cls._instance.enable_right = False
             cls._instance.enable_hazard = False

@@ -11,6 +11,7 @@ use crate::publisher::imu;
 use crate::publisher::lidar;
 use crate::publisher::vehicle_control;
 use crate::publisher::vehicle_info;
+use crate::publisher::gps;
 
 #[pyclass(module = "beamng_data_publisher")]
 pub struct BeamngDataPublisher {
@@ -27,6 +28,7 @@ pub struct BeamngDataPublisher {
   pub turn_signal_publisher: Arc<Mutex<Publisher<'static>>>,
   pub steering_publisher: Arc<Mutex<Publisher<'static>>>,
   pub velocity_publisher: Arc<Mutex<Publisher<'static>>>,
+  pub gps_publisher: Arc<Mutex<Publisher<'static>>>,
 }
 
 #[pymethods]
@@ -111,6 +113,12 @@ impl BeamngDataPublisher {
       .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
     let velocity_publisher = Arc::new(Mutex::new(velocity_publisher));
 
+    let gps_publisher = session
+      .declare_publisher("odometry/gpsz")
+      .wait()
+      .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+    let gps_publisher = Arc::new(Mutex::new(gps_publisher));
+
     Ok(BeamngDataPublisher {
       session,
       camera_publisher,
@@ -125,6 +133,7 @@ impl BeamngDataPublisher {
       turn_signal_publisher,
       steering_publisher,
       velocity_publisher,
+      gps_publisher,
     })
   }
 
@@ -188,5 +197,14 @@ impl BeamngDataPublisher {
       hazard,
       turn_signal,
     )
+  }
+
+  fn publish_gps(
+    &self,
+    x: f64,
+    y: f64,
+    z: f64
+  ) -> PyResult<()> {
+    gps::publish_gps(self.gps_publisher.clone(), x, y, z)
   }
 }

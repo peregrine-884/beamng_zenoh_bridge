@@ -1,6 +1,6 @@
 import numpy as np
 from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
-from beamngpy.sensors import Lidar, Electrics, Camera, AdvancedIMU
+from beamngpy.sensors import Lidar, Electrics, Camera, AdvancedIMU, GPS
 import keyboard
 import threading
 import random
@@ -16,6 +16,7 @@ from pub.imu import send_imu_data
 from pub.lidar import send_lidar_data
 from pub.vehicle_control import send_vehicle_control_data
 from pub.vehicle_info import send_vehicle_info_data
+from pub.gps import send_gps
 
 from sub.control import control_callback
 from sub.hazard_lights import hazard_lights_callback
@@ -30,11 +31,11 @@ def main():
     beamng = BeamNGpy('localhost', 64256)
     bng = beamng.open(launch=False)
     
-    scenario = Scenario('west_coast_usa', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue') 
-    scenario.add_vehicle(vehicle,
-        pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
-    )
+    # scenario = Scenario('west_coast_usa', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue') 
+    # scenario.add_vehicle(vehicle,
+    #     pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
+    # )
     
     # scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
     # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
@@ -42,11 +43,11 @@ def main():
     #         pos=(-97.2, -304.2, 74.0), rot_quat=(0,0,0.3826834,0.9238795)
     # )
     
-    # scenario = Scenario('c1', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
-    # scenario.add_vehicle(vehicle,
-    #         pos=(1194.884, 1451.000, 841.000), rot_quat=(0.0, 0.0, 0.42261826, 0.90630779)
-    # )
+    scenario = Scenario('c1', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
+    scenario.add_vehicle(vehicle,
+            pos=(1194.884, 1451.000, 841.000), rot_quat=(0.0, 0.0, 0.42261826, 0.90630779)
+    )
     
     scenario.make(bng)
     
@@ -106,6 +107,17 @@ def main():
         is_dir_world_space=False
     )
     
+    # ref_lon, ref_lat = 0.0, 0.0
+    # gps_front = GPS(
+    #     "front",
+    #     bng,
+    #     vehicle,
+    #     pos=(0, -1.5, 1.0),
+    #     ref_lon=ref_lon,
+    #     ref_lat=ref_lat,
+    #     is_visualised=True,
+    # )
+        
     vehicle.sensors.attach('electrics', Electrics())
     
     # zenoh
@@ -148,6 +160,7 @@ def main():
     vehicle_control_thread = threading.Thread(target=send_vehicle_control_data)
     vehicle_info_thread = threading.Thread(target=send_vehicle_info_data)
     get_vehicle_data_thread = threading.Thread(target=get_sensor_data)
+    # gps_thread = threading.Thread(target=send_gps, args=(gps_front,))
 
     stop_thread.start()
     camera_thread.start()
@@ -157,6 +170,7 @@ def main():
     vehicle_control_thread.start()
     vehicle_info_thread.start()
     get_vehicle_data_thread.start()
+    # gps_thread.start()
     
     threads = [
         stop_thread,
@@ -166,7 +180,8 @@ def main():
         lidar_thread,
         vehicle_control_thread,
         vehicle_info_thread,
-        get_vehicle_data_thread
+        get_vehicle_data_thread,
+        # gps_thread
     ]
     while any(thread.is_alive() for thread in threads):
         print(", ".join(f"{thread.name} {'is running' if thread.is_alive() else 'has finished'}" for thread in threads))
@@ -180,10 +195,12 @@ def main():
     vehicle_control_thread.join()
     vehicle_info_thread.join()
     get_vehicle_data_thread.join()
+    # gps_thread.join()
     
     lidar.remove()
     imu.remove()
     camera.remove()
+    # gps_front.remove()
     # bng.close()
     
     # control_sub.undeclare()
