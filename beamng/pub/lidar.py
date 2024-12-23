@@ -5,7 +5,7 @@ import time
 from shared import *
 
 intensity = 128
-downsample_rate = 3
+downsample_rate = 9
 offset = np.array([0.3302292, 1.653519373, 0.12556159596657])
 
 def send_lidar_data(lidar):
@@ -47,7 +47,7 @@ def send_lidar_data(lidar):
       
       pointcloud_4d = np.concatenate([rotated_pointcloud, new_column_intensity], axis=1).astype(np.float32)
       
-      data_publisher_instance.lidar(pointcloud_4d)
+      data_publisher_instance.lidar(pointcloud_4d, "base_link")
       
     next_time = max(0, lidar_interval - (time.time() - base_time))
     time.sleep(next_time)

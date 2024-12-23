@@ -58,7 +58,7 @@ def send_lidar_data(lidar):
       
       # pointcloud_4d = np.concatenate([relative_pointcloud, new_column_intensity], axis=1).astype(np.float32)
       
-      data_publisher_instance.lidar(pointcloud_4d)
+      data_publisher_instance.lidar(pointcloud_4d, "base_link")
       
     next_time = max(0, lidar_interval - (time.time() - base_time))
     time.sleep(next_time)
@@ -96,8 +96,8 @@ def main():
   bng.ui.hide_hud()
   bng.scenario.start()
   
-  vehicle.ai.set_mode("span")
-  vehicle.ai.set_speed(2)
+  vehicle.ai.set_mode("traffic")
+  vehicle.ai.set_speed(3)
   
   lidar = Lidar(
     'lidar1',

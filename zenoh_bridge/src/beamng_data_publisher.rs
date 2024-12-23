@@ -149,8 +149,8 @@ impl BeamngDataPublisher {
     imu::publish_imu_data(self.imu_publisher.clone(), imu_data)
   }
 
-  fn publish_lidar_data(&self, pointcloud: &PyArray2<f32>) -> PyResult<()> {
-    lidar::publish_lidar_data(self.lidar_publisher.clone(), pointcloud)
+  fn publish_lidar_data(&self, pointcloud: &PyArray2<f32>, frame_id: &str) -> PyResult<()> {
+    lidar::publish_lidar_data(self.lidar_publisher.clone(), pointcloud, frame_id)
   }
 
   fn publish_vehicle_control(

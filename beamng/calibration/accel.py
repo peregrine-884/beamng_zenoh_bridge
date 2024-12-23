@@ -10,7 +10,7 @@ def accel_map():
   exit_loop = False  # ループを抜けるためのフラグ
   flag = False
   
-  accels = [round(i * 0.05, 2) for i in range(1, 2)]
+  accels = [round(i * 0.05, 2) for i in range(1, 21)]
   accels.reverse()
 
   for accel in accels:

@@ -10,7 +10,8 @@ use numpy::{PyArray2};
 
 pub fn publish_lidar_data(
   lidar_publisher: Arc<Mutex<Publisher<'static>>>,
-  pointcloud: &PyArray2<f32>
+  pointcloud: &PyArray2<f32>,
+  frame_id: &str
 ) -> PyResult<()> {
   let mut publisher = lidar_publisher.lock().unwrap();
 
@@ -25,7 +26,7 @@ pub fn publish_lidar_data(
 
   let header = std_msgs::Header {
       stamp: time,
-      frame_id: "base_link".to_string()
+      frame_id: frame_id.to_string(),
   };
 
   let points: Vec<f32> = unsafe {

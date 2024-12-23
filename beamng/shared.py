@@ -13,8 +13,8 @@ class DataPublisherSingleton:
   def set_data_publisher(self, new_value):
     self.data_publisher = new_value
     
-  def lidar(self, pointcloud):
-    self.data_publisher.publish_lidar_data(pointcloud)
+  def lidar(self, pointcloud, frame_id):
+    self.data_publisher.publish_lidar_data(pointcloud, frame_id)
     
   def imu(self, imu_data):
     self.data_publisher.publish_imu_data(imu_data)
