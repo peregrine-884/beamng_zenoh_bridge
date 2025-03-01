@@ -58,7 +58,7 @@ def send_lidar_data(lidar):
       
       # pointcloud_4d = np.concatenate([relative_pointcloud, new_column_intensity], axis=1).astype(np.float32)
       
-      data_publisher_instance.lidar(pointcloud_4d, "base_link")
+      data_publisher_instance.lidar(pointcloud_4d, "velodyne")
       
     next_time = max(0, lidar_interval - (time.time() - base_time))
     time.sleep(next_time)
@@ -83,12 +83,25 @@ def main():
   #         pos=(-97.2, -304.2, 74.0), rot_quat=(0,0,0.3826834,0.9238795)
   # )
   
-  scenario = Scenario('c1', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+  # scenario = Scenario('c1', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+  # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
+  # vehicle2 = Vehicle('object', model='etk800', license='RED', color='RED')
+  # vehicle3 = Vehicle('object2', model='etk800', license='RED', color='GREEN')
+  
+  # scenario.add_vehicle(vehicle,
+  #           pos=(-5955.8, -13987.0, 897.8), rot_quat=(0.0, 0.0, -0.91706007, 0.39874907)
+  # )
+  
+  scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
   vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
   scenario.add_vehicle(vehicle,
-          pos=(1194.884, 1451.000, 841.000), rot_quat=(0.0, 0.0, 0.42261826, 0.90630779)
+        pos=(-96.2, -304.7, 73.7), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
+    )
+  vehicle2 = Vehicle('ego_vehicle2', model='etk800', license='RED', color='Red') 
+  scenario.add_vehicle(vehicle2,
+      pos=(-104.04, -305.19, 74.5), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
   )
-  
+
   scenario.make(bng)
   
   bng.settings.set_deterministic(60)
@@ -96,8 +109,8 @@ def main():
   bng.ui.hide_hud()
   bng.scenario.start()
   
-  vehicle.ai.set_mode("traffic")
-  vehicle.ai.set_speed(3)
+  # vehicle.ai.set_mode("traffic")
+  # vehicle.ai.set_speed(3)
   
   lidar = Lidar(
     'lidar1',
@@ -185,6 +198,7 @@ def main():
   
   lidar.remove()
   imu.remove()
+  bng.close()
   
 if __name__ == '__main__':
     main()

@@ -21,7 +21,11 @@ def brake_map():
     for i in range(num_loops):
       print(f"================== Loop {i} ==================")
 
-      time.sleep(3)
+      time.sleep(2)
+      vehicle_instance.vehicle.control(
+          gear = 2,
+          parkingbrake = 0.0,
+        )
       
       set_control_executed = False
       set_brake_executed = False

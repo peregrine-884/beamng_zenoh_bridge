@@ -7,6 +7,7 @@ import random
 import zenoh_bridge
 import zenoh
 import time
+import argparse
 
 from shared import *
 
@@ -31,23 +32,131 @@ def main():
     beamng = BeamNGpy('localhost', 64256)
     bng = beamng.open(launch=False)
     
-    # scenario = Scenario('west_coast_usa', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue') 
-    # scenario.add_vehicle(vehicle,
-    #     pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
-    # )
-    
-    # scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
-    # scenario.add_vehicle(vehicle,
-    #         pos=(-97.2, -304.2, 74.0), rot_quat=(0,0,0.3826834,0.9238795)
-    # )
-    
     scenario = Scenario('c1', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
-    scenario.add_vehicle(vehicle,
-            pos=(1194.884, 1451.000, 841.000), rot_quat=(0.0, 0.0, 0.42261826, 0.90630779)
-    )
+    vehicle = Vehicle('ego_vehicle', model='etk800', license='BLUE', color='Blue')
+    vehicle2 = Vehicle('object', model='etk800', license='RED', color='RED')
+    vehicle3 = Vehicle('object2', model='etk800', license='RED', color='GREEN')
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("scenario", type=int)
+    parser.add_argument("time_zeno", type=str)
+    args = parser.parse_args()
+    
+    scenario_number = args.scenario
+    time_zeno = args.time_zeno
+    
+    use_vehicle2 = False
+
+    if scenario_number == 1:
+        scenario.add_vehicle(vehicle,
+            pos=(-5955.8, -13987.0, 897.8), rot_quat=(0.0, 0.0, -0.91706007, 0.39874907)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(-6128.96240234375, -13860.3359375, 879.3995971679688), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 2:
+        scenario.add_vehicle(vehicle,
+            pos=(-6669.6, -11178.0, 877.3), rot_quat=(0.0, 0.0, 0.97236992, 0.23344536)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(-6420.4150390625, -10880.1279296875, 862.5100708007812), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 3:
+        scenario.add_vehicle(vehicle,
+            pos=(2713.837890625, 9197.7900390625, 863.1), rot_quat=(0.0, 0.0, -0.76604444, 0.64278761)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(2934.195556640625, 9036.888671875, 869.6454467773438), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 4:
+        scenario.add_vehicle(vehicle,
+            pos=(5109.5, 7935.5, 862.8), rot_quat=(0.0, 0.0, -0.62932039, 0.77714596)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(5456.4697265625, 7222.41015625, 864.9501342773438), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 5:
+        scenario.add_vehicle(vehicle,
+            pos=(5398.7, 7642.2, 876.4), rot_quat=(0.0, 0.0, -0.99813480, 0.06104854)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(5140.5087890625, 7927.6982421875, 874.3831176757812), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 6:
+        scenario.add_vehicle(vehicle,
+            pos=(3794.3, 8799.8, 869.8), rot_quat=(0.0, 0.0, 0.96126170, 0.27563736)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(2960.250732421875, 9072.095703125, 869.6416625976562), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 7:
+        scenario.add_vehicle(vehicle,
+            pos=(-736.0, 6567.0, 883.4), rot_quat=(0.0, 0.0, 0.28401534, 0.95881973)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(-780.5479125976562, 6180.248046875, 875.3951416015625), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 8:
+        scenario.add_vehicle(vehicle,
+            pos=(92.8, 5825.8, 861.6), rot_quat=(0.0, 0.0, -0.30070580, 0.95371695)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(602.9493408203125, 5785.6044921875, 862.8590087890625), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 9:
+        scenario.add_vehicle(vehicle,
+            pos=(-1715.0, -11818.5, 854.8), rot_quat=(0.0, 0.0, 0.52621392, 0.85035222)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(-2559.671630859375, -12235.865234375, 866.0284423828125), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 10:
+        scenario.add_vehicle(vehicle,
+            pos=(-7072.3, -16158.3, 886.0), rot_quat=(0.0, 0.0, -0.04361939, 0.99904822)
+        )
+        if use_vehicle2:
+            scenario.add_vehicle(vehicle2,
+                pos=(-7430.0341796875, -16525.9765625, 865.1105346679688), rot_quat=(0.0, 0.0, 0.0, 1.0)
+            )
+    elif scenario_number == 100:
+        scenario.add_vehicle(vehicle,
+            pos=(-1633.80810546875, -11778.748046875, 855.0), rot_quat=(0.0, 0.0, 0.52621392, 0.85035222)
+        )
+        
+        scenario.add_vehicle(vehicle2,
+            pos=(-1710.229736328125, -11820.5556640625, 856.0), rot_quat=(0.0, 0.0, 0.52621392, 0.85035222)
+        )
+        scenario.add_vehicle(vehicle3,
+            pos=((-1771.5086669921875, -11850.5615234375, 855.5)), rot_quat=(0.0, 0.0, 0.52621392, 0.85035222)
+        )
+    elif scenario_number == 200:
+        scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+        scenario.add_vehicle(vehicle,
+            pos=(-96.2, -304.7, 73.7), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
+        )
+        vehicle2 = Vehicle('ego_vehicle2', model='etk800', license='RED', color='Red')
+        scenario.add_vehicle(vehicle2,
+            pos=(-104.04, -305.19, 74.5), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
+        )
+    elif scenario_number == 201:
+        scenario = Scenario('2k_tsukuba_s', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+        scenario.add_vehicle(vehicle,
+            pos=(-96.2, -304.7, 73.7), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
+        )
+        vehicle2 = Vehicle('ego_vehicle2', model='etk800', license='RED', color='Red')
+        scenario.add_vehicle(vehicle2,
+            pos=(-104.04, -305.19, 74.5), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
+        )
+
     
     scenario.make(bng)
     
@@ -55,6 +164,10 @@ def main():
     bng.scenario.load(scenario)
     bng.ui.hide_hud()
     bng.scenario.start()
+    
+    if time_zeno== "night":
+        bng.env.set_tod(tod=0.0)
+        vehicle.set_lights(headlights=2)
     
     lidar = Lidar(
         'lidar1',
@@ -120,6 +233,8 @@ def main():
         
     vehicle.sensors.attach('electrics', Electrics())
     
+    # vehicle.control(gear=2)
+    
     # zenoh
     config = zenoh.Config.from_file("C:\\Users\\hayat\\zenoh_beamng_bridge\\config\\beamng-conf.json5")
     session = zenoh.open(config)
@@ -134,6 +249,7 @@ def main():
     # hazard_lights_sub = session.declare_subscriber(key, hazard_lights_callback)
     
     key = 'rate_limitted/control/command/actuation_cmd'
+    # key = 'model/rate_limitted/vehicle/command/actuation_cmd'
     model_vehicle_control_sub = session.declare_subscriber(key, model_control_callback)
     
     stop_event = threading.Event()
@@ -184,7 +300,10 @@ def main():
         # gps_thread
     ]
     while any(thread.is_alive() for thread in threads):
-        print(", ".join(f"{thread.name} {'is running' if thread.is_alive() else 'has finished'}" for thread in threads))
+        # print(", ".join(f"{thread.name} {'is running' if thread.is_alive() else 'has finished'}" for thread in threads))
+        position = lidar.get_position()
+        print(position)
+        
         time.sleep(1)
     
     stop_thread.join()

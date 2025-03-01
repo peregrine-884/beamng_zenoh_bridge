@@ -2,7 +2,7 @@ from scipy.spatial.transform import Rotation as R
 import math
 
 # オイラー角（yaw, pitch, roll）を指定
-yaw = -90  # Z軸回転（度単位）
+yaw = 42  # Z軸回転（度単位）
 pitch = 0 # Y軸回転（度単位）
 roll = 0  # X軸回転（度単位）
 

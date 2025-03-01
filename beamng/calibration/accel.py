@@ -12,6 +12,8 @@ def accel_map():
   
   accels = [round(i * 0.05, 2) for i in range(1, 21)]
   accels.reverse()
+  
+  vehicle_state_instance.set_manual_mode(False)
 
   for accel in accels:
       print(f"================== Accelerating with {accel} ==================")
@@ -21,7 +23,11 @@ def accel_map():
       for i in range(num_loops):
           print(f"================== Loop {i} ==================")
 
-          time.sleep(3)
+          time.sleep(2)
+          vehicle_instance.vehicle.control(
+            gear = 2,
+            parkingbrake = 0.0,
+          )
           
           set_control_executed = False  # `set_control` が実行されたかを示すフラグ
           while True:
@@ -44,7 +50,7 @@ def accel_map():
                   
                   vehicle_state_instance.set_manual_mode(False)
                   
-                  flag = False
+                  flag = True
                   break
 
               state = vehicle_instance.get_state()

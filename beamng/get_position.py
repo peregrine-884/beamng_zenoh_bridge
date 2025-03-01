@@ -29,17 +29,30 @@ def main():
     beamng = BeamNGpy('localhost', 64256)
     bng = beamng.open(launch=False)
     
-    # scenario = Scenario('2k_tsukuba_s', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    vehicle = Vehicle('ego_vehicle', model='etk800', license='Blue', color='Blue')
+    vehicle2 = Vehicle('ego_vehicle2', model='etk800', license='RED', color='Red') 
     
-    scenario = Scenario('tech_ground', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
-    
-    vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
-    
+    scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
     scenario.add_vehicle(vehicle,
-        pos=(-1020.482, 0.000, 1.000), rot_quat=(0.0, 0.0, -0.70710678, 0.70710678)
+        pos=(-96.2, -304.7, 73.7), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
     )
+    scenario.add_vehicle(vehicle2,
+        pos=(-104.04, -305.19, 74.5), rot_quat=(0.0, 0.0, 0.35836795, 0.93358043)
+    )
+
+        
+    # scenario = Scenario('west_coast_usa', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue') 
+    # scenario.add_vehicle(vehicle,
+    #     pos=(-717.121, 101, 118.675), rot_quat=(0, 0, 0.3826834, 0.9238795)
+    # )
     
-    # scenario.add_vehicle(vehicle, pos=(0, 0, 0))
+    # scenario = Scenario('2k_tsukuba', 'LiDAR_demo', description='Spanning the map with a LiDAR sensor')
+    # vehicle = Vehicle('ego_vehicle', model='etk800', license='RED', color='Blue')
+    # scenario.add_vehicle(vehicle,
+    #         pos=(-97.2, -304.2, 74.0), rot_quat=(0,0,0.3826834,0.9238795)
+    # )
+
     
     scenario.make(bng)
     
@@ -71,15 +84,8 @@ def main():
     while True:
         time.sleep(1)
         
-        vehicle.control(steering=0)
-        
         position = lidar.get_position()
         print(position)
-
-        if position[0] >= 1050:
-            vehicle.teleport(
-                pos=(-1020.482, 0.000, 1.000), rot_quat=(0.0, 0.0, -0.70710678, 0.70710678), reset=True
-            )
     
     lidar.remove()
     # bng.close()
