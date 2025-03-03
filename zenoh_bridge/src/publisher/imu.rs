@@ -8,26 +8,32 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 pub fn publish_imu_data(
   imu_publisher: Arc<Mutex<Publisher<'static>>>,
-  imu_data: Vec<f64>
+  imu_data: Vec<f64>,
 ) -> PyResult<()> {
-  let mut publisher = imu_publisher.lock().unwrap();
+  if imu_data.len() < 10 {
+    return Err(pyo3::exceptions::PyValueError::new_err(
+      "imu_data must contain at least 10 elements",
+    ));
+  }
+
+  let mut publisher = imu_publisher.lock().map_err(|e| {
+    pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to lock publisher: {}", e))
+  })?;
 
   let now = SystemTime::now()
     .duration_since(UNIX_EPOCH)
-    .expect("Unable to get current time");
-
-  let time = builtin_interfaces::Time {
-    sec: now.as_secs() as i32,
-    nanosec: now.subsec_nanos(),
-  };
+    .map_err(|_| pyo3::exceptions::PyRuntimeError::new_err("Unable to get current time"))?;
 
   let header = std_msgs::Header {
-    stamp: time,
+    stamp: builtin_interfaces::Time {
+      sec: now.as_secs() as i32,
+      nanosec: now.subsec_nanos(),
+    },
     frame_id: "xsens_imu_link".to_string(),
   };
 
   let imu_msg = sensor_msgs::IMU {
-    header: header,
+    header,
     orientation: geometry_msgs::Quaternion {
       x: imu_data[0],
       y: imu_data[1],

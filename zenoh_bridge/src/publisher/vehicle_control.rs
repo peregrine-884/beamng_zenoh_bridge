@@ -14,31 +14,29 @@ pub fn publish_vehicle_control(
   brake: f32,
   steering: f32,
 ) -> PyResult<()> {
-  let mut publisher = vehicle_control_publisher.lock().unwrap();
+  let mut publisher = vehicle_control_publisher.lock().map_err(|e| {
+    pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to lock publisher: {}", e))
+  })?;
 
   let now = SystemTime::now()
     .duration_since(UNIX_EPOCH)
-    .expect("Unable to get current time");
+    .map_err(|_| pyo3::exceptions::PyRuntimeError::new_err("Unable to get current time"))?;
 
   let time = builtin_interfaces::Time {
     sec: now.as_secs() as i32,
     nanosec: now.subsec_nanos(),
   };
 
-  let header = std_msgs::Header {
-    stamp: time,
-    frame_id: "base_link".to_string(),
-  };
-
-  let status = tier4_vehicle_msgs::ActuationStatus {
-    accel_status: throttle as f64,
-    brake_status: brake as f64,
-    steer_status: steering as f64,
-  };
-
   let actuation_status = tier4_vehicle_msgs::ActuationStatusStamped {
-    header: header,
-    status: status,
+    header: std_msgs::Header {
+      stamp: time,
+      frame_id: "base_link".to_string(),
+    },
+    status: tier4_vehicle_msgs::ActuationStatus {
+      accel_status: throttle as f64,
+      brake_status: brake as f64,
+      steer_status: steering as f64,
+    },
   };
 
   let encoded = cdr::serialize::<_, _, CdrLe>(&actuation_status, Infinite)

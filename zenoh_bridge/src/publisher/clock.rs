@@ -6,22 +6,20 @@ use zenoh_ros_type::{builtin_interfaces, rosgraph_msgs};
 use cdr::{CdrLe, Infinite};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-pub fn publish_clock_data(
-  clock_publisher: Arc<Mutex<Publisher<'static>>>
-) -> PyResult<()> {
-  let mut publisher = clock_publisher.lock().unwrap();
+pub fn publish_clock_data(clock_publisher: Arc<Mutex<Publisher<'static>>>) -> PyResult<()> {
+  let mut publisher = clock_publisher.lock().map_err(|e| {
+    pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to lock publisher: {}", e))
+  })?;
 
   let now = SystemTime::now()
     .duration_since(UNIX_EPOCH)
-    .expect("Unable to get current time");
-
-  let time = builtin_interfaces::Time {
-    sec: now.as_secs() as i32,
-    nanosec: now.subsec_nanos(),
-  };
+    .map_err(|_| pyo3::exceptions::PyRuntimeError::new_err("Unable to get current time"))?;
 
   let clock_msgs = rosgraph_msgs::Clock {
-    clock: time,
+    clock: builtin_interfaces::Time {
+      sec: now.as_secs() as i32,
+      nanosec: now.subsec_nanos(),
+    },
   };
 
   let encoded = cdr::serialize::<_, _, CdrLe>(&clock_msgs, Infinite)

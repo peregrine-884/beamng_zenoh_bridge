@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
-use pyo3::types::PyBytes;
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
 use zenoh::Wait;
 use zenoh::pubsub::Publisher;
 use zenoh_ros_type::{builtin_interfaces, std_msgs, sensor_msgs};
@@ -11,35 +11,35 @@ pub fn publish_camera_data(
   camera_publisher: Arc<Mutex<Publisher<'static>>>, 
   data: &PyBytes
 ) -> PyResult<()> {
-  let mut publisher = camera_publisher.lock().unwrap();
+  let mut publisher = camera_publisher.lock().map_err(|e| {
+    pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to lock publisher: {}", e))
+  })?;
 
   let now = SystemTime::now()
     .duration_since(UNIX_EPOCH)
-    .expect("Unable to get current time");
-
-  let time = builtin_interfaces::Time {
-    sec: now.as_secs() as i32,
-    nanosec: now.subsec_nanos(),
-  };
+    .map_err(|_| pyo3::exceptions::PyRuntimeError::new_err("Unable to get current time"))?;
 
   let header = std_msgs::Header {
-    stamp: time,
+    stamp: builtin_interfaces::Time {
+      sec: now.as_secs() as i32,
+      nanosec: now.subsec_nanos(),
+    },
     frame_id: "camera".to_string(),
   };
 
-  let data_slice: &[u8] = data.as_bytes();
-
   let width = 640_u32;
   let height = 480_u32;
+  let encoding = "rgba8".to_string();
+  let step = width * 4;
 
   let image = sensor_msgs::Image {
-    header: header,
-    height: height,
-    width: width,
-    encoding: "rgba8".to_string(),
-    is_bigendian: 0 as u8,
-    step: width * 4 as u32,
-    data: data_slice.to_vec(),
+    header,
+    height,
+    width,
+    encoding,
+    is_bigendian: 0,
+    step,
+    data: data.as_bytes().to_vec(),
   };
 
   let encoded = cdr::serialize::<_, _, CdrLe>(&image, Infinite)

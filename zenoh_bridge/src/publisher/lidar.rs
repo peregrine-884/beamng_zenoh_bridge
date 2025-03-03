@@ -5,56 +5,51 @@ use zenoh::pubsub::Publisher;
 use zenoh_ros_type::{builtin_interfaces, std_msgs, sensor_msgs};
 use cdr::{CdrLe, Infinite};
 use std::time::{SystemTime, UNIX_EPOCH};
-use numpy::{PyArray2};
-
+use numpy::PyArray2;
 
 pub fn publish_lidar_data(
   lidar_publisher: Arc<Mutex<Publisher<'static>>>,
   pointcloud: &PyArray2<f32>,
-  frame_id: &str
+  frame_id: &str,
 ) -> PyResult<()> {
-  let mut publisher = lidar_publisher.lock().unwrap();
+  let mut publisher = lidar_publisher.lock().map_err(|e| {
+    pyo3::exceptions::PyRuntimeError::new_err(format!("Failed to lock publisher: {}", e))
+  })?;
 
   let now = SystemTime::now()
     .duration_since(UNIX_EPOCH)
-    .expect("Unable to get current time");
-
-  let time = builtin_interfaces::Time {
-      sec: now.as_secs() as i32,
-      nanosec: now.subsec_nanos(),
-  };
+    .map_err(|_| pyo3::exceptions::PyRuntimeError::new_err("Unable to get current time"))?;
 
   let header = std_msgs::Header {
-      stamp: time,
-      frame_id: frame_id.to_string(),
+    stamp: builtin_interfaces::Time {
+      sec: now.as_secs() as i32,
+      nanosec: now.subsec_nanos(),
+    },
+    frame_id: frame_id.to_string(),
   };
 
   let points: Vec<f32> = unsafe {
-    pointcloud.as_slice().unwrap().to_vec()
+    pointcloud
+      .as_slice()
+      .map_err(|_| pyo3::exceptions::PyValueError::new_err("Invalid point cloud data"))?
+      .to_vec()
   };
 
-  let point_step = 16 as u32;
-
+  let point_step = 16;
   let point_count = points.len() / 4;
 
-  let data: Vec<u8> = (0..point_count)
-    .flat_map(|i| {
-      let x = points[i * 4 + 0];
-      let y = points[i * 4 + 1];
-      let z = points[i * 4 + 2];
-      let intensity = points[i * 4 + 3];
-
+  let data: Vec<u8> = points
+    .chunks_exact(4)
+    .flat_map(|chunk| {
       [
-        x.to_ne_bytes(),
-        y.to_ne_bytes(),
-        z.to_ne_bytes(),
-        intensity.to_ne_bytes(),
+        chunk[0].to_ne_bytes(),
+        chunk[1].to_ne_bytes(),
+        chunk[2].to_ne_bytes(),
+        chunk[3].to_ne_bytes(),
       ]
     })
-    .flat_map(|elem| elem)
+    .flatten()
     .collect();
-
-  let row_step = data.len() as u32;
 
   let fields = vec![
     sensor_msgs::PointField {
@@ -102,7 +97,7 @@ pub fn publish_lidar_data(
     fields,
     is_bigendian: false,
     point_step,
-    row_step,
+    row_step: data.len() as u32,
     data,
     is_dense: true,
   };
