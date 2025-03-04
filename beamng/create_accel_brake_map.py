@@ -6,7 +6,6 @@ from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
 from beamngpy.sensors import Electrics
 from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton, VehicleSingleton
 from pub import send_clock_data, send_vehicle_control_data, send_vehicle_info_data
-from sub.model_control import model_control_callback
 from calibration.calibration import create_accel_brake_map
 import zenoh_bridge
 
