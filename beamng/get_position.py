@@ -7,8 +7,6 @@ import random
 import beamng_publisher
 import zenoh
 
-from shared import *
-
 from pub.lidar import send_lidar_data
 from pub.imu import send_imu_data
 from pub.vehicle_info import send_vehicle_info_data

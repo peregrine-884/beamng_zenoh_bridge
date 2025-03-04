@@ -1,6 +1,6 @@
 import time
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton
 
 def send_clock_data():
 	data_publisher_instance = DataPublisherSingleton()

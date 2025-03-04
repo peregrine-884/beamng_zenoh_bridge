@@ -9,7 +9,7 @@ import zenoh
 import time
 import argparse
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton, VehicleSingleton
 
 from pub.camera import send_camera_data
 from pub.clock import send_clock_data
@@ -23,6 +23,24 @@ from sub.control import control_callback
 from sub.hazard_lights import hazard_lights_callback
 from sub.model_control import model_control_callback
 from sub.turn_indicators import turn_indicators_callback
+
+def get_sensor_data():
+  stop_event_instance = StopEventSingleton()
+  vehicle_instance = VehicleSingleton()
+  
+  frequency = 10
+  interval = 1.0 / frequency
+  base_time = time.time()
+  
+  while True:
+    if stop_event_instance.get_value():
+      break
+
+    vehicle_instance.get_sensor_data()
+
+    next_time = max(0, interval - (time.time() - base_time))
+    time.sleep(next_time)
+    base_time = time.time()
 
 def main():    
     # beamNG

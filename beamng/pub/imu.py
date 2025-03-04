@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 import time
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton
 
 def send_imu_data(imu):
   data_publisher_instance = DataPublisherSingleton()

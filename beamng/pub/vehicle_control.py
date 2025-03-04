@@ -1,6 +1,6 @@
 import time
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
 
 def send_vehicle_control_data():
   data_publisher_instance = DataPublisherSingleton()

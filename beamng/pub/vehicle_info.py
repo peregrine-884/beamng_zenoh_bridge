@@ -1,7 +1,7 @@
 import numpy as np
 import time
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton, VehicleSingleton
 
 def send_vehicle_info_data():
 	data_publisher_instance = DataPublisherSingleton()

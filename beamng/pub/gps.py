@@ -1,6 +1,6 @@
 import time
 import numpy as np
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
 
 offset = [0.33022292, -1.26480627, 0.77556159666]
 

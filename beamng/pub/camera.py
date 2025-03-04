@@ -1,6 +1,6 @@
 import time
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton
 
 def send_camera_data(camera):
   data_publisher = DataPublisherSingleton()

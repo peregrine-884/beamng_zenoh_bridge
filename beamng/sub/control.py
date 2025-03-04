@@ -2,7 +2,7 @@ import zenoh
 import time
 
 from msg.autoware_control_msgs import Control
-from shared import *
+from singleton_manager import VehicleStateSingleton, VehicleSingleton
 
 class PIDController:
     def __init__(self, Kp, Ki, Kd, output_min=-1, output_max=1):

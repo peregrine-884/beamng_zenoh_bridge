@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation as R
 import time
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
 
 intensity = 128
 downsample_rate = 9

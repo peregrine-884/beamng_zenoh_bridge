@@ -4,7 +4,7 @@ import random
 import numpy as np
 
 from msg.tier4_vehicle_msgs import ActuationCommandStamped
-from shared import *
+from singleton_manager import VehicleStateSingleton, VehicleSingleton
 
 vehicle_instance = VehicleSingleton()
 vehicle_state_instance = VehicleStateSingleton()

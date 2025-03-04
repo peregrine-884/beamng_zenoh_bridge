@@ -8,7 +8,7 @@ import random
 import zenoh_bridge
 import zenoh
 
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
 
 from pub.imu import send_imu_data
 from pub.gps import send_gps

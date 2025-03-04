@@ -1,4 +1,4 @@
-from shared import *
+from singleton_manager import VehicleStateSingleton, VehicleSingleton
 import time
 
 def accel_map():

@@ -4,7 +4,7 @@ import keyboard
 import zenoh
 from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
 from beamngpy.sensors import Electrics
-from shared import *
+from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton, VehicleSingleton
 from pub.clock import send_clock_data
 from pub.vehicle_control import send_vehicle_control_data
 from pub.vehicle_info import send_vehicle_info_data
