@@ -1,6 +1,6 @@
 import zenoh
 
-from msg.autoware_vehicle_msgs import HazardLightsCommand
+from msg import HazardLightsCommand
 from singleton_manager import VehicleStateSingleton, VehicleSingleton
 
 vehicle_instance = VehicleSingleton()

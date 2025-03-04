@@ -3,7 +3,7 @@ import time
 import random
 import numpy as np
 
-from msg.tier4_vehicle_msgs import ActuationCommandStamped
+from msg import ActuationCommandStamped
 from singleton_manager import VehicleStateSingleton, VehicleSingleton
 
 vehicle_instance = VehicleSingleton()

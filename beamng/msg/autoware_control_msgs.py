@@ -2,7 +2,7 @@ from pycdr2 import IdlStruct
 from pycdr2.types import float32
 from dataclasses import dataclass
 
-from msg.builtin_interfaces import Time
+from .builtin_interfaces import Time
     
 @dataclass
 class Lateral(IdlStruct, typename="Lateral"):
