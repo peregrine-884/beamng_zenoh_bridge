@@ -1,22 +1,7 @@
 import numpy as np
 from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
-from beamngpy.sensors import Lidar, Electrics, Camera, AdvancedIMU
-import keyboard
-import threading
+from beamngpy.sensors import Lidar, Electrics
 import random
-import beamng_publisher
-import zenoh
-
-from pub.lidar import send_lidar_data
-from pub.imu import send_imu_data
-from pub.vehicle_info import send_vehicle_info_data
-from pub.clock import send_clock_data
-from pub.camera import send_camera_data
-
-from sub.control import control_callback
-from sub.hazard_lights import hazard_lights_callback
-from sub.turn_indicators import turn_indicators_callback
-
 import time
 
 def main():    

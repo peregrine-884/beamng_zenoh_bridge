@@ -10,14 +10,7 @@ import time
 import argparse
 
 from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton, VehicleSingleton
-
-from pub.camera import send_camera_data
-from pub.clock import send_clock_data
-from pub.imu import send_imu_data
-from pub.lidar import send_lidar_data
-from pub.vehicle_control import send_vehicle_control_data
-from pub.vehicle_info import send_vehicle_info_data
-from pub.gps import send_gps
+from pub import send_camera_data, send_clock_data, send_imu_data, send_lidar_data, send_vehicle_control_data, send_vehicle_info_data
 
 from sub.control import control_callback
 from sub.hazard_lights import hazard_lights_callback

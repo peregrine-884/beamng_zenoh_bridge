@@ -9,9 +9,7 @@ import zenoh_bridge
 import zenoh
 
 from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
-
-from pub.imu import send_imu_data
-from pub.gps import send_gps
+from pub import send_imu_data, send_gps
 from scipy.spatial.transform import Rotation as R
 
 intensity = 128
