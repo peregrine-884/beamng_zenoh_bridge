@@ -1,4 +1,4 @@
-from singleton_manager import VehicleStateSingleton, VehicleSingleton
+from core.singleton_manager import VehicleStateSingleton, VehicleSingleton
 import time
 
 def brake_map():

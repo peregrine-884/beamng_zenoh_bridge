@@ -1,13 +1,23 @@
 import random
 import threading
 import keyboard
+
 import zenoh
 from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
 from beamngpy.sensors import Electrics
-from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton, VehicleSingleton
-from pub import send_clock_data, send_vehicle_control_data, send_vehicle_info_data
-from calibration.calibration import create_accel_brake_map
+
 import zenoh_bridge
+
+from core.singleton_manager import (
+  DataPublisherSingleton,
+  StopEventSingleton,
+  VehicleStateSingleton,
+  VehicleSingleton
+)
+from core.pub import send_clock_data, send_vehicle_control_data, send_vehicle_info_data
+
+from tasks.accel_brake_map.accel import accel_map
+from tasks.accel_brake_map.brake import brake_map
 
 def main():
   random.seed(1703)
@@ -38,7 +48,7 @@ def main():
   session = zenoh.open(config)
 
   stop_event = threading.Event()
-  threading.Thread(target=lambda: keyboard.wait('q') or stop_event.set()).start()
+  keyboard.add_hotkey('q', stop_event.set)
 
   data_publisher_instance = DataPublisherSingleton()
   data_publisher_instance.set_data_publisher(zenoh_bridge.BeamngDataPublisher())
@@ -51,7 +61,7 @@ def main():
 
   vehicle_state_instance = VehicleStateSingleton()
   
-  keyboard.on_press_key('s', lambda event: vehicle_state_instance.set_manual_mode(
+  keyboard.on_press_key('s', lambda _: vehicle_state_instance.set_manual_mode(
     not vehicle_state_instance.get_manual_mode()
   ))
 
@@ -60,11 +70,14 @@ def main():
     threading.Thread(target=send_vehicle_control_data),
     threading.Thread(target=send_vehicle_info_data),
     threading.Thread(target=get_sensor_data),
-    threading.Thread(target=create_accel_brake_map)
   ]
 
   for thread in threads:
     thread.start()
+
+  accel_map()
+  brake_map()
+
   for thread in threads:
     thread.join()
 

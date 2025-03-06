@@ -1,67 +1,23 @@
 import time
-import numpy as np
-from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
-from beamngpy.sensors import Lidar, Electrics, Camera, AdvancedIMU, GPS
-import keyboard
-import threading
 import random
-import zenoh_bridge
-import zenoh
+import threading
+import keyboard
 
-from singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
-from pub import send_imu_data, send_gps
+import numpy as np
 from scipy.spatial.transform import Rotation as R
 
-intensity = 128
-downsample_rate = 3
+from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
+from beamngpy.sensors import Lidar, Electrics, AdvancedIMU
 
-def send_lidar_data(lidar):
-  data_publisher_instance = DataPublisherSingleton()
-  vehicle_instance = VehicleSingleton()
-  stop_event_instance = StopEventSingleton()
-  
-  lidar_hz = 10
-  lidar_interval = 1.0 / lidar_hz
-  base_time = time.time()
-  
-  while True:
-    if stop_event_instance.get_value():
-      break
-    
-    data = lidar.poll()
-    pointcloud = data['pointCloud'][::downsample_rate]
-    num_points = pointcloud.shape[0]
-    
-    if pointcloud is not None and len(pointcloud) > 0:
-      state = vehicle_instance.get_state()
-      
-      if state is None:
-        continue
-      
-      position = lidar.get_position()
-      relative_pointcloud = np.array(pointcloud - position, dtype=np.float32)
-      
-      rotation = state["rotation"]
-      r = R.from_quat(rotation)
-      yaw = r.as_euler('xyz', degrees=True)[2] + 90
-      pitch = r.as_euler('xyz', degrees=True)[1]
-      roll = r.as_euler('xyz', degrees=True)[0]
-      new_rotation = R.from_euler('xyz', [roll, pitch, yaw], degrees=True)
-      rotation_matrix = new_rotation.as_matrix()
-      rotated_pointcloud = np.dot(relative_pointcloud, rotation_matrix.T)
-      
-      new_column_intensity = np.full((num_points, 1), intensity)
-      
-      pointcloud_4d = np.concatenate([rotated_pointcloud, new_column_intensity], axis=1).astype(np.float32)
-      
-      # pointcloud_4d = np.concatenate([relative_pointcloud, new_column_intensity], axis=1).astype(np.float32)
-      
-      data_publisher_instance.lidar(pointcloud_4d, "velodyne")
-      
-    next_time = max(0, lidar_interval - (time.time() - base_time))
-    time.sleep(next_time)
-    base_time = time.time()
-  
+import zenoh_bridge
+
+from core.singleton_manager import (
+   DataPublisherSingleton,
+   StopEventSingleton,
+   VehicleSingleton
+)
+from core.pub import send_imu_data, send_lidar_data
+
 def main():
   random.seed(1703)
   set_up_simple_logging()
@@ -167,7 +123,7 @@ def main():
   stop_event_instance = StopEventSingleton()
   stop_event_instance.set_stop_event(stop_event)
   
-  lidar_thread = threading.Thread(target=send_lidar_data, args=(lidar,))
+  lidar_thread = threading.Thread(target=send_lidar_data, args=(lidar, "velodyne"))
   imu_thread = threading.Thread(target=send_imu_data, args=(imu,))
   get_vehicle_data_thread = threading.Thread(target=get_sensor_data)
   gps_thread = threading.Thread(target=send_gps, args=(gps_front,))

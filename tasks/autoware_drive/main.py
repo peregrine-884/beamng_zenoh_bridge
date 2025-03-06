@@ -279,7 +279,7 @@ def main():
     camera_thread = threading.Thread(target=send_camera_data, args=(camera,))
     clock_thread = threading.Thread(target=send_clock_data)
     imu_thread = threading.Thread(target=send_imu_data, args=(imu,))
-    lidar_thread = threading.Thread(target=send_lidar_data, args=(lidar,))
+    lidar_thread = threading.Thread(target=send_lidar_data, args=(lidar, "base_link"))
     vehicle_control_thread = threading.Thread(target=send_vehicle_control_data)
     vehicle_info_thread = threading.Thread(target=send_vehicle_info_data)
     get_vehicle_data_thread = threading.Thread(target=get_sensor_data)
