@@ -12,5 +12,6 @@
   "is_render_depth": false,
   "is_visualised": false,
   "is_streaming": true,
-  "is_dir_world_space": false
+  "is_dir_world_space": false,
+  "frequency": 50,
 }

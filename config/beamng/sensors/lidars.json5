@@ -10,5 +10,6 @@
   "is_using_shared_memory": true,
   "is_visualised": false,
   "is_streaming": true,
-  "is_dir_world_space": false
+  "is_dir_world_space": false,
+  "frequency": 10,
 }

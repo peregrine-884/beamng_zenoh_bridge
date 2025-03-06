@@ -7,5 +7,6 @@
   "is_send_immediately": true,
   "is_using_gravity": true,
   "is_visualised": true,
-  "is_dir_world_space": false
+  "is_dir_world_space": false,
+  "frequency": 25
 }
