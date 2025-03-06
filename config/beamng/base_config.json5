@@ -1,0 +1,8 @@
+{
+  "map": "maps\\c1.json5",
+  "sensors": {
+    "cameras": "sensors\\cameras.json5",
+    "imus": "sensors\\imus.json5",
+    "lidars": "sensors\\lidars.json5"
+  }
+}

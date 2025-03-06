@@ -1,0 +1,16 @@
+{
+  "name": "front",
+  "requested_update_time": 0.01,
+  "pos": [0, 0, 3],
+  "dir": [0, -1, 0],
+  "up": [0, 0, 1],
+  "resolution": [640, 480],
+  "near_far_planes": [0.05, 300],
+  "is_using_shared_memory": true,
+  "is_render_annotations": false,
+  "is_render_instance": false,
+  "is_render_depth": false,
+  "is_visualised": false,
+  "is_streaming": true,
+  "is_dir_world_space": false
+}

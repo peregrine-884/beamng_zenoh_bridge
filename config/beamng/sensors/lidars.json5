@@ -1,0 +1,14 @@
+{
+  "name": "top",
+  "requested_update_time": 0.01,
+  "pos": [0, 0.65, 2.0],
+  "dir": [0, -1, 0],
+  "up": [0, 0, 1],
+  "vertical_resolution": 32,
+  "horizontal_resolution": 360,
+  "is_rotate_mode": false,
+  "is_using_shared_memory": true,
+  "is_visualised": false,
+  "is_streaming": true,
+  "is_dir_world_space": false
+}

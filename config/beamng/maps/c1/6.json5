@@ -1,0 +1,11 @@
+{
+  "ego_vehicle": {
+    "name": "ego_vehicle",
+    "model": "etk800",
+    "color": "Blue",
+    "pos": [3794.3, 8799.8, 869.8],
+    "rot_quat": [0.0, 0.0, 0.96126170, 0.27563736]
+  },
+  "npc_vehicles": [
+  ]
+}
