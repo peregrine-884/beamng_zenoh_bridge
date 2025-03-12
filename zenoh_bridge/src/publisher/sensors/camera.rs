@@ -2,15 +2,12 @@ use std::sync::{Arc, Mutex};
 
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
-use cdr::{CdrLe, Infinite};
 
 use zenoh::pubsub::Publisher;
 
 use zenoh_ros_type::sensor_msgs;
 
-use crate::utils::create_publisher::create_publisher;
-use crate::utils::create_header::create_header;
-use crate::utils::publish_data::publish_data;
+use crate::utils::{create_header, create_publisher, publish_data};
 
 #[pyclass]
 pub struct CameraDataPublisher {
@@ -26,7 +23,7 @@ impl CameraDataPublisher {
     Ok(Self { publisher })
   }
 
-  fn publish(&self, data: &Bound<'_, PyBytes>, frame_id: &str, width: f32, height: f32) -> PyResult<()> {
+  fn publish(&self, frame_id: &str, data: &Bound<'_, PyBytes>, width: f32, height: f32) -> PyResult<()> {
     let header = create_header(frame_id);
 
     let width = width as u32;
@@ -44,9 +41,6 @@ impl CameraDataPublisher {
       data: data.as_bytes().to_vec(),
     };
 
-    let encoded = cdr::serialize::<_, _, CdrLe>(&image, Infinite)
-      .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-
-    publish_data(&self.publisher, encoded)
+    publish_data(&self.publisher, &image)
   }
 }

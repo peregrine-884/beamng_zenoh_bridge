@@ -1,16 +1,12 @@
 use std::sync::{Arc, Mutex};
 
 use pyo3::prelude::*;
-use cdr::{CdrLe, Infinite};
 
 use zenoh::pubsub::Publisher;
 
 use zenoh_ros_type::{geometry_msgs, sensor_msgs};
 
-use crate::utils::create_publisher::create_publisher;
-use crate::utils::create_header::create_header;
-use crate::utils::publish_data::publish_data;
-
+use crate::utils::{create_header, create_publisher, publish_data};
 
 #[pyclass]
 pub struct IMUDataPublisher {
@@ -26,7 +22,7 @@ impl IMUDataPublisher {
     Ok(Self { publisher })
   }
 
-  fn publish(&self, data: Vec<f64>, frame_id: &str) -> PyResult<()> {
+  fn publish(&self, frame_id: &str, data: Vec<f64>) -> PyResult<()> {
     let header = create_header(frame_id);
 
     let imu_msgs = sensor_msgs::IMU {
@@ -52,10 +48,6 @@ impl IMUDataPublisher {
       linear_acceleration_covariance: [0.0; 9],
     };
 
-    let encoded = cdr::serialize::<_, _, CdrLe>(&imu_msgs, Infinite)
-      .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-
-
-    publish_data(&self.publisher, encoded)
+    publish_data(&self.publisher, &imu_msgs)
   }
 }

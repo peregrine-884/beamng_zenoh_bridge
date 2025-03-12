@@ -1,17 +1,13 @@
 use std::sync::{Arc, Mutex};
 
 use pyo3::prelude::*;
-use cdr::{CdrLe, Infinite};
 
 use zenoh::pubsub::Publisher;
 
 use zenoh_ros_type::geometry_msgs;
 
 use crate::msg::{geometry_msgs as my_geometry_msgs, nav_msgs};
-use crate::utils::create_publisher::create_publisher;
-use crate::utils::create_header::create_header;
-use crate::utils::publish_data::publish_data;
-
+use crate::utils::{create_header, create_publisher, publish_data};
 
 #[pyclass]
 pub struct GPSDataPublisher {
@@ -62,10 +58,7 @@ impl GPSDataPublisher {
       twist,
     };
 
-    let encoded = cdr::serialize::<_, _, CdrLe>(&odometry, Infinite)
-      .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
-
-    publish_data(&self.publisher, encoded)
+    publish_data(&self.publisher, &odometry)
   }
 
 }
