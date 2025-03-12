@@ -8,5 +8,6 @@
   "is_using_gravity": true,
   "is_visualised": true,
   "is_dir_world_space": false,
+  "topic_name": "imu/data",
   "frequency": 25
 }

@@ -11,5 +11,6 @@
   "is_visualised": false,
   "is_streaming": true,
   "is_dir_world_space": false,
+  "topic_name": "sensing/lidar/concatenated/pointcloud",
   "frequency": 10,
 }
