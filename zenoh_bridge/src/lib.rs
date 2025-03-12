@@ -1,12 +1,16 @@
-mod beamng_data_publisher;
-mod publisher;
 mod msg;
+mod publisher;
+mod utils;
 
 use pyo3::prelude::*;
-use beamng_data_publisher::BeamngDataPublisher;
+use pyo3::types::PyModule;
+
+use publisher::sensors::lidar::LidarDataPublisher;
+use publisher::sensors::imu::IMUDataPublisher;
 
 #[pymodule]
-fn zenoh_bridge(_py: Python, m: &PyModule) -> PyResult<()> {
-    m.add_class::<BeamngDataPublisher>()?;
+fn zenoh_bridge(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<LidarDataPublisher>()?;
+    m.add_class::<IMUDataPublisher>()?;
     Ok(())
 }
