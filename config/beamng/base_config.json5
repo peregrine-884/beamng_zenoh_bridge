@@ -3,6 +3,10 @@
   "sensors": {
     "cameras": "sensors\\cameras.json5",
     "imus": "sensors\\imus.json5",
-    "lidars": "sensors\\lidars.json5"
+    "lidars": "sensors\\lidars.json5",
+  },
+  "vehicle": {
+    "pub": "vehicle\\publishers.json5",
+    "sub": "vehicle\\subscribers.json5"
   }
 }

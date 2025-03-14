@@ -13,6 +13,7 @@ def load_config_from_json5(config_dir, config_path):
 
   if "map" in data:
     map_path = os.path.join(config_dir, data["map"])
+    print(f"Map file path: {map_path}")
     map_data = load_config_from_json5(config_dir, data["map"])
     data["map_data"] = map_data
 
@@ -22,6 +23,14 @@ def load_config_from_json5(config_dir, config_path):
       print(f"{sensor_type.capitalize()} sensor file path: {sensor_file_path}")
       sensor_data = load_config_from_json5(config_dir, sensor_file)
       data[sensor_type] = sensor_data
+
+  if "vehicle" in data:
+    for key, value in data["vehicle"].items():
+      vehicle_file_path = os.path.join(config_dir, value)
+      print(f"{key.capitalize()} vehicle file path: {vehicle_file_path}")
+      vehicle_data = load_config_from_json5(config_dir, value)
+      print(f"Vehicle data: {vehicle_data}")
+      data[key] = vehicle_data
   
   if "spawn_points" in data:
     spawn_file = data["spawn_points"]
@@ -46,7 +55,12 @@ def split_data_from_config(data):
     sensors = {
         'cameras': data['cameras'],
         'imus': data['imus'],
-        'lidars': data['lidars']
+        'lidars': data['lidars'],
     }
 
-    return level_and_description, ego_and_npc_vehicles, sensors
+    vehicle = {
+      "publisher": data['vehicle']['pub'],
+      "subscriber": data['vehicle']['sub'],
+    }
+
+    return level_and_description, ego_and_npc_vehicles, sensors, vehicle

@@ -3,6 +3,7 @@ import time
 from beamngpy.sensors import Camera
 
 from zenoh_bridge import CameraDataPublisher
+from core.utils.sleep_until_next import sleep_until_next
 
 class CameraManager:
   def __init__(self, bng, vehicle, camera_data, config_path):
@@ -38,7 +39,4 @@ class CameraManager:
       
       self.publisher.publish(image_data)
       
-      next_time = max(0, interval - (time.time() - base_time))
-      if next_time > 0:
-        time.sleep(next_time)
-      base_time = time.time()
+      base_time = sleep_until_next(interval, base_time)

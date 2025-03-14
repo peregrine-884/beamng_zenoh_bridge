@@ -5,10 +5,11 @@ from scipy.spatial.transform import Rotation as R
 
 from beamngpy.sensors import AdvancedIMU
 
-from core.singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleStateSingleton
+from zenoh_bridge import IMUDataPublisher
+from core.utils.sleep_until_next import sleep_until_next
 
 class ImuManager:
-  def __init__(self, bng, vehicle, imu_data):
+  def __init__(self, bng, vehicle, imu_data, config_path):
     self.imu = AdvancedIMU(
       imu_data['name'],
       bng,
@@ -23,16 +24,14 @@ class ImuManager:
       is_dir_world_space=imu_data['is_dir_world_space'],
     )
     self.frequency = imu_data['frequency']
+
+    self.publisher = IMUDataPublisher(config_path, imu_data['topic_name'])
     
-def send(self):
-  data_publisher = DataPublisherSingleton()
-  stop_event = StopEventSingleton()
-  vehicle_state = VehicleStateSingleton()
-  
+def send(self, stop_event):  
   interval = 1.0 / self.frequency
   base_time = time.time()
   
-  while not stop_event.get_value():
+  while not stop_event.is_set():
     data = self.imu.poll()
     if data is None:
       continue
@@ -58,10 +57,8 @@ def send(self):
     quaternion = R.from_matrix(R_combined).as_quat()
     
     imu_data = quaternion.tolist() + acc_local.tolist() + ang_vel.tolist()
-    data_publisher.imu(imu_data)
+
+    self.publisher.publish(imu_data)
     
     # 次の送信まで待機
-    next_time = max(0, interval - (time.time() - base_time))
-    if next_time > 0:
-      time.sleep(next_time)
-    base_time = time.time()
+    base_time = sleep_until_next(interval, base_time)

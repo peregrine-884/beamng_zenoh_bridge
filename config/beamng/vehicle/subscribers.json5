@@ -1,0 +1,5 @@
+{
+  "actuation_control": "control/command/control_cmd",
+  "hazard_lights": "control/command/hazard_lights_cmd",
+  "turn_indicators": "control/command/turn_indicators_cmd"
+}

@@ -5,14 +5,15 @@ from scipy.spatial.transform import Rotation as R
 
 from beamngpy.sensors import Lidar
 
-from core.singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
+from zenoh_bridge import LidarDataPublisher
+from core.utils.sleep_until_next import sleep_until_next
 
 class Lidarmanager:
   INTENSITY = 128
   DOWNSAMPLE_RATE = 5
   OFFSET = np.array([0.3302292, 1.653519373, 0.12556159596657])
 
-  def __init__(self, bng, vehicle, lidar_data, frame):
+  def __init__(self, bng, vehicle, lidar_data, frame_id, config_path):
     self.lidar = Lidar(
       lidar_data['name'],
       bng,
@@ -26,17 +27,15 @@ class Lidarmanager:
       is_rotate_mode=lidar_data['is_rotate_mode'],
     )
     self.frequency = lidar_data['frequency']
-    self.frame = frame
+    self.frame_id = frame_id
+
+    self.publisher = LidarDataPublisher(config_path, lidar_data['topic_name'])
     
-  def send(self):
-    data_publisher_instance = DataPublisherSingleton()
-    vehicle_instance = VehicleSingleton()
-    stop_event_instance = StopEventSingleton()
-    
+  def send(self, stop_event):
     interval = 1.0 / self.frequency
     base_time = time.time()
     
-    while not stop_event_instance.get_value():
+    while not stop_event.is_set():
       data = self.lidar.poll()
       if data is None:
         print("No data received from the Lidar")
@@ -70,10 +69,7 @@ class Lidarmanager:
       intensity_column = np.full((len(rotated_pcd), 1), self.INTENSITY)
       pcd_with_intensity = np.concatenate([rotated_pcd, intensity_column], axis=1).astype(np.float32)
       
-      data_publisher_instance.lidar(pcd_with_intensity, self.frame)
+      self.publisher.publish(pcd_with_intensity, self.frame_id)
       
-      next_time = max(0, interval - (time.time() - base_time))
-      if next_time > 0:
-        time.sleep(next_time)
-      base_time = time.time()
+      base_time = sleep_until_next(interval, base_time)
 

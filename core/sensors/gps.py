@@ -4,12 +4,13 @@ import numpy as np
 
 from beamngpy.sensors import GPS
 
-from core.singleton_manager import DataPublisherSingleton, StopEventSingleton, VehicleSingleton
+from zenoh_bridge import GPSDataPublisher
+from core.utils.sleep_until_next import sleep_until_next
 
 class GPSManager:
   OFFSET = [0.33022292, -1.26480627, 0.77556159666]
   
-  def __init__(self, bng, vehicle, gps_data):
+  def __init__(self, bng, vehicle, gps_data, config_path):
     self.gps = GPS(
       gps_data['nama'],
       bng,
@@ -20,6 +21,8 @@ class GPSManager:
       is_visualised=gps_data['is_visualised'],
     )
     self.frequency = gps_data['frequency']
+
+    self.publisher = GPSDataPublisher(config_path, gps_data['topic_name'])
     
   def _find_closest_coordinates(self, gps_data, relative_pos):
     min_x, min_y = float('inf'), float('inf')
@@ -34,15 +37,11 @@ class GPSManager:
 
     return [closest_x, closest_y, relative_pos[2]]
 
-  def send(self):
-    data_publisher_instance = DataPublisherSingleton()
-    vehicle_instance = VehicleSingleton()
-    self.stop_event = StopEventSingleton()
-    
+  def send(self, stop_event):
     interval = 1.0 / self.frequency
     base_time = time.time()
 
-    while not self.stop_event.get_value():
+    while not stop_event.is_set():
       state = vehicle_instance.get_state()
       if state is None:
         continue
@@ -52,11 +51,8 @@ class GPSManager:
 
       if gps_data:
         closest_coordinates = self._find_closest_coordinates(gps_data, relative_pos)
-        data_publisher_instance.gps(closest_coordinates)
+        self.publisher.publish(closest_coordinates)
 
-      next_time = max(0, interval - (time.time() - base_time))
-      if next_time > 0:
-        time.sleep(next_time)
-      base_time = time.time()
+      base_time = sleep_until_next(interval, base_time)
       
       

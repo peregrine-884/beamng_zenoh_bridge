@@ -1,22 +1,19 @@
 import time
 
-from core.singleton_manager import DataPublisherSingleton, StopEventSingleton
+from zenoh_bridge import ClockDataPublisher
+from core.utils.sleep_until_next import sleep_until_next
 
 class ClockManager:
-  def __init__(self, frequency):
+  def __init__(self, frequency, config_path, topic_name):
     self.frequency = frequency
+
+    self.publisher = ClockDataPublisher(config_path, topic_name)
     
-  def send(self):
-    data_publisher_instance = DataPublisherSingleton()
-    stop_event_instance = StopEventSingleton()
-    
+  def send(self, stop_event):
     interval = 1.0 / self.frequency
     base_time = time.time()
     
-    while not stop_event_instance.get_value():
-      data_publisher_instance.clock()
+    while not stop_event.is_set():
+      self.publisher.publish()
       
-      next_time = max(0, interval - (time.time() - base_time))
-      if next_time > 0:
-        time.sleep(next_time)
-      base_time = time.time()
+      base_time = sleep_until_next(interval, base_time)
