@@ -6,7 +6,7 @@ from beamngpy.sensors import Electrics
 from core.vehicle.publishers import VehiclePublishers
 from core.vehicle.subscribers import VehicleSubscribers
 
-class VehicleManager:
+class VehicleInterface:
   def __init__(self, vehicle_data, vehicle_config, config_path):
     self.vehicle = Vehicle(vehicle_data['name'], model=vehicle_data['model'], color=vehicle_data['color'])
     self.vehicle.sensors.attach('electrics', Electrics())
@@ -17,8 +17,24 @@ class VehicleManager:
     self.publishers = VehiclePublishers(
       self.vehicle,
       config_path,
-      vehicle_config[]
+      vehicle_config['pub']
     )
+    
+    self.subscribers = VehicleSubscribers(
+      self.vehicle,
+      config_path,
+      vehicle_config['sub']
+    )
+    
+  def start_communication(self, stop_event):
+    while self.state is None or self.electrics is None:
+      time.sleep(0.1)
+      
+    self.publishers.start(stop_event)
+    
+  def stop_communication(self):
+    self.publishers.join()
+    self.subscribers.close()
 
   def update_data(self, stop_event, frequency):
     interval = 1.0 / frequency
@@ -34,3 +50,15 @@ class VehicleManager:
       if next_time > 0:
         time.sleep(next_time)
       base_time = time.time()
+      
+  def get_state(self):
+    return self.state
+  
+  def get_electrics(self):
+    return self.electrics
+  
+  def get_manual_mode(self):
+    return self.manual_mode
+  
+  def set_manual_mode(self, manual_mode):
+    self.manual_mode = manual_mode
