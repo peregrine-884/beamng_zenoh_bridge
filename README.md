@@ -91,7 +91,6 @@ This repository enables vehicle control using **Autoware** in conjunction with *
    ```bash
    Bin64\BeamNG.tech.x64.exe -console -nosteam -tcom-listen-ip "127.0.0.1" -lua "extensions.load('tech/techCore');tech_techCore.openServer(64256)"
    ```
-   This will start **BeamNG.tech** and make it ready to communicate with other systems (e.g., Autoware) via TCP/IP.
 
 ### Running Scripts
 1. Open a second terminal and navigate to the `scripts` directory of this repository:
