@@ -2,7 +2,7 @@ from pycdr2 import IdlStruct
 from pycdr2.types import uint8
 from dataclasses import dataclass
 
-from msg.builtin_interfaces import Time
+from .builtin_interfaces import Time
 
 @dataclass
 class TurnIndicatorsCommand(IdlStruct, typename="TurnIndicatorsCommand"):

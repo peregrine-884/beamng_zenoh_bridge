@@ -1,0 +1,3 @@
+target/
+build/
+zenoh_bridge.egg-info

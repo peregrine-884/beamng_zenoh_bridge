@@ -1,0 +1,34 @@
+{
+    "actuation_status": {
+        "topic_name": "vehicle/status/actuation_status",
+        "frequency": 10
+    },
+    "battery_charge": {
+        "topic_name": "vehicle/status/battery_charge",
+        "frequency": 10
+    },
+    "control_mode": {
+        "topic_name": "vehicle/status/control_mode",
+        "frequency": 10
+    },
+    "gear_status": {
+        "topic_name": "vehicle/status/gear_status",
+        "frequency": 10
+    },
+    "hazard_lights_status": {
+        "topic_name": "vehicle/status/hazard_lights_status",
+        "frequency": 10
+    },
+    "steering_status": {
+        "topic_name": "vehicle/status/steering_status",
+        "frequency": 10
+    },
+    "turn_indicators_status": {
+        "topic_name": "vehicle/status/turn_indicators_status",
+        "frequency": 10
+    },
+    "velocity_status": {
+        "topic_name": "vehicle/status/velocity_status",
+        "frequency": 10
+    },
+}

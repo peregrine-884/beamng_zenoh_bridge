@@ -1,0 +1,5 @@
+{
+  "level": "2k_tsukuba",
+  "description": "Tsukuba Circuit",
+  "spawn_points": "maps\\2k_tsukuba\\1.json5",
+}

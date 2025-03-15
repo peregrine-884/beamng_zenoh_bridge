@@ -1,0 +1,15 @@
+{
+  mode: "peer",
+  connect: {
+    endpoints: [
+      "tcp/192.168.20.222:7447"
+    ]
+  },
+  transport: {
+    link: {
+      tx: {
+        batching: false,
+      }
+    }
+  },
+}

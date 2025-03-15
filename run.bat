@@ -1,8 +1,7 @@
 @echo off
+echo Activating Python virtual environment...
 call .\venv\Scripts\activate
 
-cd .\beamng\
+cd .\tasks\autoware_drive
+python aa.py
 
-python main.py
-
-deactivate
