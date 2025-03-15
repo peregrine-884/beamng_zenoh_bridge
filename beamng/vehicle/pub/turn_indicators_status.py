@@ -1,11 +1,11 @@
 import time
 
 from zenoh_bridge import TurnIndicatorsStatusPublisher as Publisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
 class TurnIndicatorsStatusPublisher:
-  def __init__(self, vehicle, config_path, topic_name, frequency):
-    self.vehicle = vehicle
+  def __init__(self, vehicle_data, config_path, topic_name, frequency):
+    self.vehicle_data = vehicle_data
     self.publisher = Publisher(config_path, topic_name)
     self.frequency = frequency
 
@@ -14,10 +14,10 @@ class TurnIndicatorsStatusPublisher:
     base_time = time.time()
 
     while not stop_event.is_set():
-      electrics = self.vehicle.get_electrics()
+      electrics = self.vehicle_data.get_electrics()
 
       # 1: Disable, 2: Enable_Left, 3: Enable_Right
-      turn_signal = electrics['turn_signal']
+      turn_signal = electrics['turnsignal']
       if turn_signal > 0.1:
         turn_signal_state = 3
       elif turn_signal < -0.1:

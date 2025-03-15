@@ -1,11 +1,11 @@
 import time
 
 from zenoh_bridge import ActuationStatusPublisher as Publisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
 class ActuationStatusPublisher:
-  def __init__(self, vehicle, config_path, topic_name, frequency):
-    self.vehicle = vehicle
+  def __init__(self, vehicle_data, config_path, topic_name, frequency):
+    self.vehicle_data = vehicle_data
     self.publisher = Publisher(config_path, topic_name)
     self.frequency = frequency
 
@@ -14,11 +14,11 @@ class ActuationStatusPublisher:
     base_time = time.time()
 
     while not stop_event.is_set():
-      electrics = self.vehicle.get_electrics()
+      electrics = self.vehicle_data.get_electrics()
 
-      throttle = electrics['throttle']
-      brake = electrics['brake']
-      steering = electrics['steering']
+      throttle = electrics['throttle_input']
+      brake = electrics['brake_input']
+      steering = electrics['steering_input']
 
       self.publisher.publish(
         frame_id = 'base_link',

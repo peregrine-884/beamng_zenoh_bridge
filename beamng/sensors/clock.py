@@ -1,13 +1,15 @@
 import time
 
 from zenoh_bridge import ClockDataPublisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
 class ClockManager:
-  def __init__(self, frequency, config_path, topic_name):
-    self.frequency = frequency
+  def __init__(self, clock_config, zenoh_config):
+    self.frequency = clock_config['frequency']
 
-    self.publisher = ClockDataPublisher(config_path, topic_name)
+    self.publisher = ClockDataPublisher(zenoh_config, clock_config['topic_name'])
+    
+    print(f'Clock: {clock_config["topic_name"]}')
     
   def send(self, stop_event):
     interval = 1.0 / self.frequency

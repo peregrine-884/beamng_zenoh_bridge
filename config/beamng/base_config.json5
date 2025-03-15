@@ -1,10 +1,12 @@
 {
   // Map settings: specifies the driving map and vehicle spawn points
-  "map": "maps\\c1.json5",
+  "map": "maps\\2k_tsukuba.json5",
 
   // Sensor settings: defines the sensors used on the vehicle
   "sensors": {
     "cameras": "sensors\\cameras.json5",
+    "clock": "sensors\\clock.json5",
+    "gps": "",
     "imus": "sensors\\imus.json5",
     "lidars": "sensors\\lidars.json5",
   },

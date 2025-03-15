@@ -1,6 +1,6 @@
 import zenoh
 
-from msg import TurnIndicatorsCommand
+from beamng.msg.autoware_vehicle_msgs import TurnIndicatorsCommand
 
 class TurnIndicatorsSubscriber:
   def __init__(self, vehicle):

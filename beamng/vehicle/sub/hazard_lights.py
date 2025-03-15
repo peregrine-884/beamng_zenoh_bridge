@@ -1,6 +1,6 @@
 import zenoh
 
-from msg import HazardLightsCommand
+from beamng.msg.autoware_vehicle_msgs import HazardLightsCommand
 
 class HazardLightsSubscriber:
   def __init__(self, vehicle):

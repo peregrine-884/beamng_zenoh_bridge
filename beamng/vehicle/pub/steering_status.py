@@ -1,11 +1,11 @@
 import time
 
 from zenoh_bridge import SteeringStatusPublisher as Publisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
 class SteeringStatusPublisher:
-  def __init__(self, vehicle, config_path, topic_name, frequency):
-    self.vehicle = vehicle
+  def __init__(self, vehicle_data, config_path, topic_name, frequency):
+    self.vehicle_data = vehicle_data
     self.publisher = Publisher(config_path, topic_name)
     self.frequency = frequency
 
@@ -14,7 +14,7 @@ class SteeringStatusPublisher:
     base_time = time.time()
 
     while not stop_event.is_set():
-      electrics = self.vehicle.get_electrics()
+      electrics = self.vehicle_data.get_electrics()
 
       # Convert steering wheel input to tire angle.
       # The steering wheel input (-1 to 1) is mapped to the tire angle.
@@ -22,7 +22,7 @@ class SteeringStatusPublisher:
       # BeamNG: Left (negative), Right (positive)
       # Autoware: Left (positive), Right (negative)
       # Invert sign to match Autoware's convention.
-      steering = electrics['steering']
+      steering = electrics['steering_input']
       steering_tire_angle = steering * 0.7 * -1
 
       self.publisher.publish(

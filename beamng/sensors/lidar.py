@@ -6,30 +6,39 @@ from scipy.spatial.transform import Rotation as R
 from beamngpy.sensors import Lidar
 
 from zenoh_bridge import LidarDataPublisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
-class Lidarmanager:
+class LidarManager:
   INTENSITY = 128
-  DOWNSAMPLE_RATE = 5
+  DOWNSAMPLE_RATE = 3
   OFFSET = np.array([0.3302292, 1.653519373, 0.12556159596657])
 
-  def __init__(self, bng, vehicle, lidar_data, frame_id, config_path):
+  def __init__(self, bng, vehicle, vehicle_data, lidar_config, zenoh_config):
     self.lidar = Lidar(
-      lidar_data['name'],
+      lidar_config['name'],
       bng,
       vehicle,
-      requested_update_time=lidar_data['requested_update_time'],
-      pos=tuple(lidar_data['pos']), 
-      dir=tuple(lidar_data['dir']),
-      up=tuple(lidar_data['up']),
-      vertical_resolution=lidar_data['vertical_resolution'],
-      horizontal_angle=lidar_data['horizontal_angle'],
-      is_rotate_mode=lidar_data['is_rotate_mode'],
+      requested_update_time=lidar_config['requested_update_time'],
+      pos=tuple(lidar_config['pos']), 
+      dir=tuple(lidar_config['dir']),
+      up=tuple(lidar_config['up']),
+      vertical_resolution=lidar_config['vertical_resolution'],
+      horizontal_angle=lidar_config['horizontal_angle'],
+      is_rotate_mode=lidar_config['is_rotate_mode'],
+      is_360_mode=lidar_config['is_360_mode'],
+      is_using_shared_memory=lidar_config['is_using_shared_memory'],
+      is_visualised=lidar_config['is_visualised'],
+      is_streaming=lidar_config['is_streaming'],
+      is_dir_world_space=lidar_config['is_dir_world_space'],
     )
-    self.frequency = lidar_data['frequency']
-    self.frame_id = frame_id
+    self.frequency = lidar_config['frequency']
+    self.frame_id = lidar_config['frame_id']
 
-    self.publisher = LidarDataPublisher(config_path, lidar_data['topic_name'])
+    self.publisher = LidarDataPublisher(zenoh_config, lidar_config['topic_name'])
+    
+    self.vehicle_data = vehicle_data
+    
+    print(f'{lidar_config["name"]}: {lidar_config["topic_name"]}')
     
   def send(self, stop_event):
     interval = 1.0 / self.frequency
@@ -49,27 +58,28 @@ class Lidarmanager:
         print("Received empty pointCloud data from the Lidar")
         continue
       
-      state = vehicle_instance.get_state()
-      if state is None:
-        print("No state data received from the Vehicle")
-        continue
+      state = self.vehicle_data.get_state()
       
-      if self.frame == "base_link":
+      if self.frame_id == "base_link":
         position = state["pos"]
         relative_pcd = np.array(pointcloud - position + self.OFFSET, dtype=np.float32)
       else:
         position = self.lidar.get_position()
         relative_pcd = np.array(pointcloud - position, dtype=np.float32)
         
-      rotation = R.from_quat(state["rotation"])
-      yaw, pitch, roll = rotation.as_euler("xyz", degrees=True) + np.array([90, 0, 0])
-      rotation_matrix = R.from_euler("xyz", [roll, pitch, yaw], degrees=True).as_matrix()
+      rotation = state["rotation"]
+      r = R.from_quat(rotation)
+      yaw = r.as_euler('xyz', degrees=True)[2] + 90
+      pitch = r.as_euler('xyz', degrees=True)[1]
+      roll = r.as_euler('xyz', degrees=True)[0]
+      new_rotation = R.from_euler('xyz', [roll, pitch, yaw], degrees=True)
+      rotation_matrix = new_rotation.as_matrix()
       rotated_pcd = np.dot(relative_pcd, rotation_matrix.T)
       
       intensity_column = np.full((len(rotated_pcd), 1), self.INTENSITY)
       pcd_with_intensity = np.concatenate([rotated_pcd, intensity_column], axis=1).astype(np.float32)
       
-      self.publisher.publish(pcd_with_intensity, self.frame_id)
+      self.publisher.publish(self.frame_id, pcd_with_intensity)
       
       base_time = sleep_until_next(interval, base_time)
 

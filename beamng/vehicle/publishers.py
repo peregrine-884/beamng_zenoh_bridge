@@ -1,6 +1,6 @@
 import threading
 
-from zenoh_bridge import (
+from beamng.vehicle.pub import (
   ActuationStatusPublisher,
   BatteryChargePublisher,
   ControlModePublisher,
@@ -12,19 +12,22 @@ from zenoh_bridge import (
 )
 
 class VehiclePublishers:
-  def __init__(self, vehicle, config_path, publisher_configs):
+  def __init__(self, vehicle_data, config_path, publisher_configs):
     self.publishers = {}
     self.threads = []
 
     for key, config in publisher_configs.items():
-      publisher_class = globals().get(f'{key.capitalize()}Publisher')
+      string = ''.join(word.capitalize() for word in key.split('_'))
+      publisher_class = globals().get(f'{string}Publisher')
       if publisher_class:
         self.publishers[key] = publisher_class(
-          vehicle,
+          vehicle_data,
           config_path,
           config['topic_name'],
           config['frequency']
         )
+        
+        print(f'Publisher {config["topic_name"]}')
 
   def start(self, stop_event):
     for publisher in self.publishers.values():

@@ -10,7 +10,6 @@ def load_config_from_json5(config_dir, config_path):
   """
   def load_file(path):
     full_path = os.path.join(config_dir, path)
-    print(f"Loading config from {full_path}")
     if not os.path.exists(full_path):
       raise FileNotFoundError(f"Config file not found at {full_path}")
     with open(full_path, "r") as f:
@@ -42,13 +41,14 @@ def split_data(data):
       'description': data['map']['description'],
     }
 
-    ego_and_npc_vehicles = {
-      'ego_vehicle': data['map']['spawn_points']['ego_vehicle'],
-      'npc_vehicles': data['map']['spawn_points']['npc_vehicles']
-    }
+    ego_vehicle = data['map']['spawn_points']['ego_vehicle']
+    
+    npc_vehicles = data['map']['spawn_points']['npc_vehicles']
 
     sensors = {
       'cameras': data['sensors']['cameras'],
+      'clocks': data['sensors']['clock'],
+      'gps': data['sensors']['gps'],
       'imus': data['sensors']['imus'],
       'lidars': data['sensors']['lidars'],
     }
@@ -58,4 +58,4 @@ def split_data(data):
       "sub": data['vehicle']['sub'],
     }
 
-    return level_and_description, ego_and_npc_vehicles, sensors, vehicle_interface
+    return level_and_description, ego_vehicle, npc_vehicles, sensors, vehicle_interface

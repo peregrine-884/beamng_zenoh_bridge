@@ -8,13 +8,13 @@ from beamngpy.sensors import Electrics
 
 import zenoh_bridge
 
-from core.singleton_manager import (
+from beamng.singleton_manager import (
   DataPublisherSingleton,
   StopEventSingleton,
   VehicleStateSingleton,
   VehicleSingleton
 )
-from core.pub import send_clock_data, send_vehicle_control_data, send_vehicle_info_data
+from beamng.pub import send_clock_data, send_vehicle_control_data, send_vehicle_info_data
 
 from tasks.accel_brake_map.accel import accel_map
 from tasks.accel_brake_map.brake import brake_map

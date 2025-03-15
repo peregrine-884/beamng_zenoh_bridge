@@ -11,12 +11,12 @@ from beamngpy.sensors import Lidar, Electrics, AdvancedIMU
 
 import zenoh_bridge
 
-from core.singleton_manager import (
+from beamng.singleton_manager import (
    DataPublisherSingleton,
    StopEventSingleton,
    VehicleSingleton
 )
-from core.pub import send_imu_data, send_lidar_data
+from beamng.pub import send_imu_data, send_lidar_data
 
 def main():
   random.seed(1703)

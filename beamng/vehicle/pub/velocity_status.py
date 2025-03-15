@@ -3,11 +3,11 @@ import time
 import numpy as np
 
 from zenoh_bridge import VelocityStatusPublisher as Publisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
 class VelocityStatusPublisher:
-  def __init__(self, vehicle, config_path, topic_name, frequency):
-    self.vehicle = vehicle
+  def __init__(self, vehicle_data, config_path, topic_name, frequency):
+    self.vehicle_data = vehicle_data
     self.publisher = Publisher(config_path, topic_name)
     self.frequency = frequency
 
@@ -16,7 +16,7 @@ class VelocityStatusPublisher:
     base_time = time.time()
 
     while not stop_event.is_set():
-      state = self.vehicle.get_state()
+      state = self.vehicle_data.get_state()
 
       dir_vector = state['dir']
       vel_vector = state['vel']

@@ -1,0 +1,11 @@
+[
+  {
+    "name": "front",
+    "pos": [0, -1.5, 1.0],
+    "ref_lon": 0.0,
+    "ref_lat": 0.0,
+    "is_visualised": false,
+    "topic_name": "odometry/gps",
+    "frequency": 20
+  }
+]

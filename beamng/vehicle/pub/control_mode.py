@@ -1,11 +1,11 @@
 import time
 
 from zenoh_bridge import ControlModePublisher as Publisher
-from core.utils.sleep_until_next import sleep_until_next
+from beamng.utils.sleep_until_next import sleep_until_next
 
 class ControlModePublisher:
-  def __init__(self, vehicle, config_path, topic_name, frequency):
-    self.vehicle = vehicle
+  def __init__(self, vehicle_data, config_path, topic_name, frequency):
+    self.vehicle_data = vehicle_data
     self.publisher = Publisher(config_path, topic_name)
     self.frequency = frequency
 
@@ -15,7 +15,7 @@ class ControlModePublisher:
 
     while not stop_event.is_set():
       # 1: Autonomous, 4: Manual
-      control_mode = 4 if self.vehicle.get_manual_mode() else 1
+      control_mode = 4 if self.vehicle_data.get_manual_mode() else 1
 
       self.publisher.publish(
         control_mode = control_mode

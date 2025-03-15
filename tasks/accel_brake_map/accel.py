@@ -1,4 +1,4 @@
-from core.singleton_manager import VehicleStateSingleton, VehicleSingleton
+from beamng.singleton_manager import VehicleStateSingleton, VehicleSingleton
 import time
 
 def accel_map():
