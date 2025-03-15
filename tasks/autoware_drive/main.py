@@ -11,15 +11,10 @@ sys.path.append(path_to_add)
 
 from beamngpy import BeamNGpy, Scenario, Vehicle, set_up_simple_logging
 from beamng.utils.config_loader import load_config_from_json5, split_data
+from beamng.utils.create_sensor_thread import create_sensor_thread
 from beamng.vehicle.vehicle_data import VehicleData
 from beamng.vehicle.vehicle_interface import VehicleInterface
 from beamng.sensors import CameraManager, ClockManager, GPSManager, ImuManager, LidarManager
-
-def create_sensor_thread(sensor_manager, stop_event):
-  """Function to create a thread for each sensor"""
-  thread = threading.Thread(target=sensor_manager.send, args=(stop_event,))
-  thread.start()
-  return thread
 
 def main():
   # Paths to the configuration files
@@ -98,14 +93,12 @@ def main():
     sensor_threads.append(create_sensor_thread(sensor_manager, stop_event))
 
   # Start manual control toggle thread
-  keyboard.on_press_key('s', lambda event : ego_vehicle_data.set_manual_mode(not ego_vehicle_data.get_manual_mode()))
+  keyboard.on_press_key('s', lambda _: ego_vehicle_data.set_manual_mode(not ego_vehicle_data.get_manual_mode()))
 
   # Wait for the stop signal and join threads
   stop_thread.join()
   get_vehicle_data_thread.join()
   ego_vehicle_interface.stop_communication()
-
-  # Wait for all sensor threads to finish
   for thread in sensor_threads:
     thread.join()
 
