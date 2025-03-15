@@ -25,9 +25,7 @@ Zenoh is a high-performance, distributed data platform designed for real-time da
 
 ### Supported Languages:
 - **C/C++**, **Rust**, **Python**, and **Go** are supported, allowing integration into a wide range of systems and applications.
-以下、修正を加えたMarkdown形式での記述です：
 
-```markdown
 ## 3. Installation and Setup
 Follow these steps to set up the development environment for the project.
 
