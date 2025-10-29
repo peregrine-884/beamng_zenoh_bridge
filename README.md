@@ -1,4 +1,4 @@
-# zenoh_beamng_bridge
+# beamng_zenoh_bridge
 ## 1. BeamNG  
 BeamNG is software equipped with a physics engine that enables realistic vehicle simulations. Notably, it can simulate realistic collisions and vehicle behavior, making it widely used for applications ranging from gaming to research and development.
 
